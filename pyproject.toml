@@ -1,0 +1,74 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "autodistill-can"
+version = "1.4.4"
+description = "Turn a CAN capture into an openpilot car port: recover signals, counters and checksums, and emit a port package"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [{ name = "Benji" }]
+keywords = ["can", "canbus", "automotive", "reverse-engineering", "openpilot", "dbc"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Scientific/Engineering",
+  "Topic :: Software Development :: Embedded Systems",
+]
+
+# The analysis core is pure stdlib on purpose: it has to run on a comma device
+# as happily as on a laptop. numpy is only an accelerator for correlation.
+dependencies = []
+
+[project.urls]
+Repository = "https://github.com/bbbenji/AutoDistill"
+
+[project.optional-dependencies]
+fast = ["numpy>=1.21"]
+panda = ["libusb1>=2.0"]
+# openpilot writes its segments as Cap'n Proto, which is schema-driven and so
+# cannot be read without a parser. The schema itself is openpilot's and is not
+# vendored -- see sources/rlog.py.
+rlog = ["pycapnp>=1.3"]
+# Zstandard is standard library from Python 3.14; this is only for older ones.
+zstd = ["zstandard>=0.21; python_version < '3.14'"]
+# cantools is a test-only dependency: it is what proves an emitted DBC loads in
+# something other than our own reader.
+dev = ["pytest>=7", "numpy>=1.21", "cantools>=39", "ruff>=0.6", "pycapnp>=1.3"]
+
+[project.scripts]
+autodistill-can = "autodistill_can.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["autodistill_can*"]
+
+[tool.setuptools.package-data]
+"autodistill_can.web" = ["static/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# `tests` is not a package; adding it to sys.path lets conftest helpers be
+# imported by name from the test modules.
+pythonpath = [".", "tests"]
+addopts = "--strict-markers"
+
+[tool.ruff]
+line-length = 90
+target-version = "py310"
+
+[tool.ruff.lint]
+# F and E9 are the ones that catch real defects (undefined names, syntax
+# errors, unused imports). The rest are style, and this codebase is formatted
+# by hand for readability rather than to satisfy a linter.
+select = ["F", "E9", "W", "I"]
+
+[tool.ruff.lint.per-file-ignores]
+# Test modules import cantools through importorskip before their own imports.
+"tests/*" = ["E402"]

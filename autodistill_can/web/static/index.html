@@ -1,0 +1,673 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101a18">
+  <meta name="api-token" content="__API_TOKEN__">
+  <title>AutoDistill — guided car porting</title>
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="AutoDistill home">
+        <span class="brand-mark" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </span>
+        <span class="brand-word">Auto<span>Distill</span></span>
+      </a>
+      <div class="topbar-center">
+        <span class="local-pill"><i></i> Local workspace</span>
+        <span class="save-state" id="save-state">Ready</span>
+      </div>
+      <div class="topbar-actions">
+        <button class="guide-toggle" id="guide-toggle" type="button" aria-pressed="false">
+          <span class="guide-dot" aria-hidden="true"></span> Guide me
+        </button>
+        <button class="icon-button" id="help-button" aria-label="Open help" title="Help">?</button>
+        <span class="version">v__APP_VERSION__</span>
+      </div>
+    </header>
+
+    <aside class="sidebar">
+      <div class="project-heading">
+        <p class="eyebrow">Current project</p>
+        <button class="project-picker" id="project-picker" type="button"
+                aria-haspopup="dialog">
+          <span id="project-name">Starting…</span>
+          <span class="chevron" aria-hidden="true"></span>
+        </button>
+      </div>
+
+      <nav class="steps" aria-label="Porting steps">
+        <button class="step active" data-step="source" type="button" aria-current="step">
+          <span class="step-number">01</span>
+          <span><strong>Get CAN data</strong><small>Demo, upload, or capture</small></span>
+          <i></i>
+        </button>
+        <button class="step" data-step="details" type="button">
+          <span class="step-number">02</span>
+          <span><strong>Describe the car</strong><small>Vehicle and reference data</small></span>
+          <i></i>
+        </button>
+        <button class="step" data-step="analysis" type="button">
+          <span class="step-number">03</span>
+          <span><strong>Decode traffic</strong><small>Signals and fingerprints</small></span>
+          <i></i>
+        </button>
+        <button class="step" data-step="port" type="button">
+          <span class="step-number">04</span>
+          <span><strong>Build the port</strong><small>Review and export</small></span>
+          <i></i>
+        </button>
+      </nav>
+
+      <section class="guide hidden" id="guide" aria-label="Step-by-step guidance">
+        <div class="guide-head">
+          <p class="eyebrow">Guide me</p>
+          <button class="guide-close" id="guide-off" type="button"
+                  aria-label="Turn off step-by-step guidance">Turn off</button>
+        </div>
+        <div class="guide-progress"><i id="guide-bar"></i></div>
+        <p class="guide-count" id="guide-count">—</p>
+        <div id="guide-body" aria-live="polite">
+          <h3 id="guide-title">Getting your bearings…</h3>
+          <p id="guide-detail"></p>
+          <p class="guide-why" id="guide-why"></p>
+          <button class="text-button guide-help hidden" id="guide-help" type="button"></button>
+          <button class="button button-primary button-wide hidden" id="guide-action" type="button"></button>
+          <button class="text-button guide-skip hidden" id="guide-skip" type="button">Skip this step</button>
+        </div>
+        <ol class="guide-list" id="guide-list"></ol>
+      </section>
+
+      <div class="privacy-card">
+        <span class="shield" aria-hidden="true">◆</span>
+        <div>
+          <strong>Your drives stay local</strong>
+          <p>Nothing is uploaded to a cloud service. The browser talks only to AutoDistill on this computer.</p>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="status-banner hidden" id="status-banner" role="status" aria-live="polite">
+        <span class="spinner" aria-hidden="true"></span>
+        <div>
+          <strong id="status-title">Working</strong>
+          <p id="status-message">AutoDistill is processing your data.</p>
+        </div>
+        <button class="button button-quiet" id="cancel-button" type="button">Cancel</button>
+      </div>
+
+      <section class="panel active" data-panel="source">
+        <div class="panel-heading split-heading">
+          <div>
+            <p class="kicker">Step 1 of 4</p>
+            <h1>Start with a drive</h1>
+            <p class="lede">A CAN log is the car’s conversation recorded over time. Use the safe demo first, bring an existing log, or record one from connected hardware.</p>
+          </div>
+          <div class="stage-glyph" aria-hidden="true">
+            <span class="road-line"></span>
+            <span class="pulse-line"></span>
+          </div>
+        </div>
+
+        <div class="choice-grid">
+          <article class="choice-card featured">
+            <div class="card-tag">Best first step</div>
+            <div class="choice-icon demo-icon" aria-hidden="true">▶</div>
+            <h2>Try a guided demo</h2>
+            <p>Generate a small fake drive with known speed and steering signals. No car or hardware needed.</p>
+            <ul class="mini-list">
+              <li>Takes about 20 seconds</li>
+              <li>Exercises the complete workflow</li>
+            </ul>
+            <button class="button button-primary button-wide" id="demo-button" type="button">Create demo project <span>→</span></button>
+          </article>
+
+          <article class="choice-card">
+            <div class="choice-icon upload-icon" aria-hidden="true">↑</div>
+            <h2>Upload a CAN log</h2>
+            <p>Use a candump <code>.log</code> or a compatible CAN <code>.csv</code> exported by SavvyCAN, Cabana, or python-can. Compressed files and openpilot <code>rlog</code> segments are read as they are.</p>
+            <label class="dropzone" id="capture-dropzone">
+              <input type="file" id="capture-file" accept=".log,.txt,.csv,.gz,.bz2,.xz,.zst,.rlog" hidden>
+              <strong>Drop your log here</strong>
+              <span>or click to choose a file</span>
+              <small>Processed locally · up to 8 GiB</small>
+            </label>
+          </article>
+
+          <article class="choice-card">
+            <div class="choice-icon hardware-icon" aria-hidden="true">⌁</div>
+            <h2>Record from hardware</h2>
+            <p>Capture passively from a comma panda or a Linux SocketCAN interface. AutoDistill will not transmit.</p>
+            <div class="segmented" role="group" aria-label="Capture hardware">
+              <button class="active" data-source-kind="panda" type="button">panda</button>
+              <button data-source-kind="socketcan" type="button">SocketCAN</button>
+            </div>
+            <div class="compact-form">
+              <label id="capture-source-label">Source
+                <input id="capture-source" value="panda:" autocomplete="off">
+              </label>
+              <label>Drive length
+                <select id="capture-duration">
+                  <option value="60">1 minute · quick check</option>
+                  <option value="300">5 minutes · basic drive</option>
+                  <option value="900" selected>15 minutes · recommended</option>
+                  <option value="1800">30 minutes · varied drive</option>
+                </select>
+              </label>
+            </div>
+            <button class="button button-secondary button-wide" id="capture-button" type="button">Start passive capture</button>
+            <p class="hardware-status" id="hardware-status">Checking local hardware…</p>
+            <button class="text-button" data-help-topic="hardware" type="button">Which adaptor, and where does it plug in? →</button>
+          </article>
+        </div>
+
+        <div class="learn-card">
+          <div class="learn-number">A</div>
+          <div>
+            <strong>What makes a useful drive?</strong>
+            <p>While safe and legal, vary speed, steer both ways, brake gently, use indicators, and include stops. More variation makes hidden fields easier to identify.</p>
+          </div>
+          <button class="text-button" data-help-topic="capture" type="button">See the drive checklist →</button>
+        </div>
+      </section>
+
+      <section class="panel" data-panel="details">
+        <div class="panel-heading">
+          <p class="kicker">Step 2 of 4</p>
+          <h1>Tell us what we’re looking at</h1>
+          <p class="lede">A few labels turn anonymous bus traffic into a useful OpenDBC package. Reference data is optional, but it makes the largest difference.</p>
+        </div>
+
+        <div class="file-summary" id="capture-summary">
+          <span class="file-glyph">LOG</span>
+          <div><strong>No capture yet</strong><small>Return to step 1 to add one.</small></div>
+          <button class="text-button" data-go-step="source" id="capture-action" type="button">Replace</button>
+        </div>
+
+        <div class="extra-captures" id="extra-captures"></div>
+
+        <div class="details-layout">
+          <div class="form-card">
+            <div class="section-label"><span>Vehicle identity</span><i>Required</i></div>
+            <div class="field-grid">
+              <label class="field field-wide">
+                <span>Vehicle name</span>
+                <input id="vehicle-name" placeholder="e.g. 2021 Hyundai Ioniq 5" maxlength="100">
+                <small>The human-readable name shown in openpilot.</small>
+              </label>
+              <label class="field">
+                <span>Brand package</span>
+                <input id="vehicle-brand" placeholder="e.g. hyundai" maxlength="40" pattern="[a-z][a-z0-9_]*">
+                <small>Lowercase letters, numbers, underscores.</small>
+              </label>
+              <label class="field">
+                <span>Main CAN bus</span>
+                <select id="vehicle-bus">
+                  <option value="0">Bus 0 · most common</option>
+                  <option value="1">Bus 1</option>
+                  <option value="2">Bus 2</option>
+                  <option value="3">Bus 3</option>
+                </select>
+                <small>The bus carrying normal vehicle traffic.</small>
+              </label>
+            </div>
+
+            <div class="section-label spaced"><span>Independent measurements</span><i class="optional">Strongly recommended</i></div>
+            <div class="support-upload" id="reference-upload">
+              <div class="support-icon">CSV</div>
+              <div>
+                <strong>Reference data</strong>
+                <p>Synchronized GPS speed, steering angle, pedal position, or OBD-II values let AutoDistill name signals and recover units. A Torque Pro track log works as exported.</p>
+                <span class="attached-file" id="reference-attached">Nothing attached</span>
+              </div>
+              <label class="button button-small button-secondary">
+                Choose CSV
+                <input type="file" id="reference-file" accept=".csv,.gz,.bz2,.xz,.zst" hidden>
+              </label>
+            </div>
+
+            <details class="advanced-block manual-knowledge" open>
+              <summary>
+                <span>What you already know <i>Human supplied</i></span>
+                <span class="chevron" aria-hidden="true"></span>
+              </summary>
+              <div class="manual-content">
+                <p class="manual-intro">These change how the drive is decoded: an ECU type turns a responding address into a fingerprint openpilot can match, and a known signal definition pins a field you have already identified elsewhere. Both are optional. Everything else a finished port needs — vehicle specifications, CarState bindings, actuation, limits — is on the next step, beside the list of what is still missing.</p>
+
+                <div class="support-upload vehicle-info-upload" id="vehicle-info-upload">
+                  <div class="support-icon">JSON</div>
+                  <div>
+                    <strong>Load a vehicle-info file</strong>
+                    <p>Fill every manual fact below from a saved or supplied test fixture. The file is validated before anything is changed.</p>
+                    <span class="attached-file" id="vehicle-info-attached">Nothing loaded</span>
+                  </div>
+                  <label class="button button-small button-secondary">
+                    Choose JSON
+                    <input type="file" id="vehicle-info-file" accept=".json,application/json" hidden>
+                  </label>
+                </div>
+
+                <div class="manual-columns">
+                  <label class="field">
+                    <span>Known ECU types</span>
+                    <textarea id="manual-ecus" rows="4" placeholder="One per line, for example:&#10;0x7E0 = engine&#10;0x730 = eps"></textarea>
+                    <small>Request address equals an OpenDBC ECU type. Invalid types are rejected.
+                      <button class="text-button" data-help-topic="ecus" type="button">How to identify each ECU →</button>
+                    </small>
+                  </label>
+                  <label class="field">
+                    <span>Sources and citations</span>
+                    <textarea id="manual-sources" rows="4" placeholder="One URL, service-manual page, or measurement note per line"></textarea>
+                    <small>Record where each fact came from so another engineer can verify it.</small>
+                  </label>
+                </div>
+
+                <div class="section-label spaced">
+                  <span>Known signal definitions</span>
+                  <i class="optional">Advanced</i>
+                </div>
+                <p class="manual-intro">Use this when you already know a field from a service document or independent test. Length may correct an imperfect recovered boundary when signedness and byte order are also explicit, but it can never overwrite a counter, checksum, or multiplexer.</p>
+                <div class="manual-signals" id="manual-signal-list"></div>
+                <button class="button button-small button-secondary" id="add-signal-button" type="button">+ Add known signal</button>
+
+              </div>
+            </details>
+
+            <details class="advanced-block">
+              <summary>
+                <span>Advanced analysis settings</span>
+                <span class="chevron" aria-hidden="true"></span>
+              </summary>
+              <div class="advanced-content">
+                <label class="field">
+                  <span>Minimum frames per message</span>
+                  <input id="min-frames" type="number" min="5" max="100000" value="40">
+                  <small>Raise this to ignore rare messages; 40 is a good default.</small>
+                </label>
+                <label class="check-row">
+                  <input id="strict-mode" type="checkbox">
+                  <span><strong>Strict file parsing</strong><small>Stop on the first malformed row instead of skipping it.</small></span>
+                </label>
+              </div>
+            </details>
+          </div>
+
+          <aside class="guidance-column">
+            <div class="guidance-card">
+              <span class="guidance-icon">◎</span>
+              <h3>Reference data is the translator</h3>
+              <p>Without it, AutoDistill can find where fields are, but not whether a number means speed, temperature, steering, or something else.</p>
+              <button class="text-button" data-help-topic="reference" type="button">How to record it →</button>
+            </div>
+            <div class="guidance-card subdued">
+              <span class="guidance-icon">◇</span>
+              <h3>Have firmware responses?</h3>
+              <p>Attach an existing probe capture now, or use the guarded probe after analysis.</p>
+              <label class="text-button file-link">
+                Attach firmware log
+                <input type="file" id="firmware-file" accept=".log,.txt,.gz,.bz2,.xz,.zst" hidden>
+              </label>
+              <span class="attached-file" id="firmware-attached">Nothing attached</span>
+              <button class="text-button" data-help-topic="firmware" type="button">How do I get one? →</button>
+            </div>
+          </aside>
+        </div>
+
+        <div class="panel-actions">
+          <button class="button button-quiet" data-go-step="source" type="button">← Back</button>
+          <button class="button button-primary" id="analyse-button" type="button">Decode this drive <span>→</span></button>
+        </div>
+      </section>
+
+      <section class="panel" data-panel="analysis">
+        <div class="panel-heading result-heading">
+          <div>
+            <p class="kicker">Step 3 of 4</p>
+            <h1>Your car’s traffic, decoded</h1>
+            <p class="lede" id="analysis-lede">Run analysis to turn the raw traffic into messages, signals, counters, checksums, and a fingerprint.</p>
+          </div>
+          <div class="readiness-dial" id="readiness-dial">
+            <span id="readiness-value">—</span>
+            <small>evidence<br>coverage</small>
+          </div>
+        </div>
+
+        <div class="empty-result" id="analysis-empty">
+          <div class="scan-visual" aria-hidden="true"><span></span><i></i><b></b></div>
+          <h2 id="analysis-empty-title">Ready to decode</h2>
+          <p id="analysis-empty-detail"></p>
+          <button class="button button-primary" id="analysis-empty-action" type="button">Decode this drive</button>
+        </div>
+
+        <div id="analysis-results" class="hidden">
+          <div class="metric-grid">
+            <div class="metric"><span>Messages</span><strong id="metric-messages">0</strong><small>unique CAN IDs</small></div>
+            <div class="metric"><span>Signals</span><strong id="metric-signals">0</strong><small>candidate fields</small></div>
+            <div class="metric accent"><span>Named</span><strong id="metric-named">0</strong><small>matched to reference</small></div>
+            <div class="metric"><span>Checksums</span><strong id="metric-checksums">0</strong><small>recovered formulas</small></div>
+            <div class="metric"><span>Counters</span><strong id="metric-counters">0</strong><small>rolling sequences</small></div>
+            <div class="metric"><span>Firmware</span><strong id="metric-firmware">0</strong><small>ECU responses</small></div>
+          </div>
+
+          <div class="results-layout">
+            <div class="result-card">
+              <div class="result-card-heading">
+                <div><p class="eyebrow">Automatic work</p><h2>What AutoDistill recovered</h2></div>
+                <div class="artifact-links">
+                  <a id="download-analysis" href="#">JSON report</a>
+                  <a id="download-dbc" href="#">DBC file</a>
+                  <a id="download-vehicle-info" class="hidden" href="#">Manual facts</a>
+                </div>
+              </div>
+              <div class="evidence-list" id="evidence-list"></div>
+            </div>
+
+            <div class="result-card review-card">
+              <div class="result-card-heading">
+                <div><p class="eyebrow">Handoff</p><h2>What still needs a person</h2></div>
+                <span class="human-badge">Human review</span>
+              </div>
+              <div class="review-list" id="review-list"></div>
+            </div>
+          </div>
+
+          <div class="result-card coverage-card" id="coverage-card">
+            <div class="result-card-heading">
+              <div>
+                <p class="eyebrow">Completeness</p>
+                <h2>How much of a port this is</h2>
+              </div>
+              <button class="button button-small button-secondary" id="fill-gaps" type="button">Fill in the gaps →</button>
+            </div>
+            <div class="coverage-levels" id="coverage-levels"></div>
+            <p class="coverage-note">Every level below is about <em>completeness</em>, not safety. A port with every box ticked is still one nobody has driven: AutoDistill cannot test a car, so it never marks a port safe for control.</p>
+            <p class="coverage-hint hidden" id="coverage-hint"></p>
+            <div class="coverage-missing" id="coverage-missing"></div>
+          </div>
+
+          <details class="advanced-block manual-knowledge" id="port-facts" open>
+            <summary>
+              <span>Facts AutoDistill cannot observe <i>Human supplied</i></span>
+              <span class="chevron" aria-hidden="true"></span>
+            </summary>
+            <div class="manual-content">
+              <p class="manual-intro">These are the gaps listed above. None of them is in the traffic, so they have to be measured or looked up; supply them and the generated port comes out finished instead of inert. Everything here is marked as manual evidence, and none of it marks a port safe for control.</p>
+
+                <div class="section-label"><span>Measured vehicle specifications</span><button class="text-button" data-help-topic="specs" type="button">How to find these →</button></div>
+                <div class="field-grid five-fields">
+                  <label class="field">
+                    <span>Mass with driver · kg</span>
+                    <input id="manual-mass" type="number" min="101" max="20000" step="0.1" placeholder="e.g. 1845">
+                  </label>
+                  <label class="field">
+                    <span>Wheelbase · metres</span>
+                    <input id="manual-wheelbase" type="number" min="0.51" max="15" step="0.001" placeholder="e.g. 2.766">
+                  </label>
+                  <label class="field">
+                    <span>Steering ratio</span>
+                    <input id="manual-steer-ratio" type="number" min="1.01" max="100" step="0.01" placeholder="e.g. 14.3">
+                  </label>
+                  <label class="field">
+                    <span>Package / trim label</span>
+                    <input id="manual-package" maxlength="120" placeholder="e.g. All">
+                  </label>
+                  <label class="field">
+                    <span>Comma harness</span>
+                    <input id="manual-harness" maxlength="60" placeholder="e.g. hyundai_k">
+                  </label>
+                </div>
+                <div class="section-label spaced">
+                  <span>openpilot CarState bindings</span>
+                  <button class="text-button" data-help-topic="bindings" type="button">How to identify each field →</button>
+                </div>
+                <p class="manual-intro">Bind each openpilot field to a recovered signal. This is how fields a name cannot reveal get filled in — nothing in <code>BRAKE_PRESSURE</code> says which value means the pedal is down. Run the decoder first so the signal lists are populated.</p>
+                <div class="manual-signals" id="binding-list"></div>
+                <button class="button button-small button-secondary" id="add-binding-button" type="button">+ Bind a CarState field</button>
+
+                <div class="section-label spaced">
+                  <span>Actuation, limits, and safety</span>
+                  <button class="text-button" data-help-topic="actuation" type="button">How to find the command message →</button>
+                </div>
+                <p class="manual-intro">Fill these in and AutoDistill generates a working controller instead of an inert one. Every value must come from your own bench work: nothing here is inferable from traffic, and the generated port is still <strong>never</strong> marked safe for control.</p>
+
+                <div class="command-block">
+                  <div class="command-heading"><strong>Steering command</strong><small>The message that commands the rack</small></div>
+                  <div class="field-grid four-fields">
+                    <label class="field"><span>Bus</span><input id="lat-bus" type="number" min="0" max="15" placeholder="0"></label>
+                    <label class="field"><span>Address</span><input id="lat-address" placeholder="0x2B0"></label>
+                    <label class="field"><span>Message name</span><input id="lat-message" placeholder="LKAS"></label>
+                    <label class="field"><span>Rate · Hz</span><input id="lat-frequency" type="number" min="1" max="200" placeholder="100"></label>
+                  </div>
+                  <div class="manual-columns">
+                    <label class="field">
+                      <span>Signals to send</span>
+                      <textarea id="lat-signals" rows="4" placeholder="One per line:&#10;STEER_TORQUE = apply_torque&#10;STEER_REQ = lat_active&#10;SET_ME_1 = 1"></textarea>
+                      <small>Values: apply_torque, apply_angle, lat_active, accel, gas, brake, long_active, enabled, counter, frame, or a number.</small>
+                    </label>
+                    <div class="field-grid">
+                      <label class="field"><span>Counter signal</span><input id="lat-counter" placeholder="COUNTER"></label>
+                      <label class="field"><span>Checksum signal</span><input id="lat-checksum" placeholder="CHECKSUM"></label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="command-block">
+                  <div class="command-heading"><strong>Acceleration command</strong><small>Only for longitudinal control</small></div>
+                  <div class="field-grid four-fields">
+                    <label class="field"><span>Bus</span><input id="long-bus" type="number" min="0" max="15" placeholder="0"></label>
+                    <label class="field"><span>Address</span><input id="long-address" placeholder="0x1A0"></label>
+                    <label class="field"><span>Message name</span><input id="long-message" placeholder="ACC_CMD"></label>
+                    <label class="field"><span>Rate · Hz</span><input id="long-frequency" type="number" min="1" max="200" placeholder="50"></label>
+                  </div>
+                  <div class="manual-columns">
+                    <label class="field">
+                      <span>Signals to send</span>
+                      <textarea id="long-signals" rows="4" placeholder="ACCEL_CMD = accel&#10;ACC_ACTIVE = long_active"></textarea>
+                    </label>
+                    <div class="field-grid">
+                      <label class="field"><span>Counter signal</span><input id="long-counter" placeholder="COUNTER"></label>
+                      <label class="field"><span>Checksum signal</span><input id="long-checksum" placeholder="CHECKSUM"></label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="section-label spaced">
+                  <span>Limits and tuning</span>
+                  <button class="text-button" data-help-topic="limits" type="button">How to read these off the stock system →</button>
+                </div>
+                <div class="field-grid four-fields">
+                  <label class="field"><span>Max steer command</span><input id="limit-steer-max" type="number" step="any" min="0" placeholder="384"></label>
+                  <label class="field"><span>Ramp up · per frame</span><input id="limit-delta-up" type="number" step="any" min="0" placeholder="3"></label>
+                  <label class="field"><span>Ramp down · per frame</span><input id="limit-delta-down" type="number" step="any" min="0" placeholder="7"></label>
+                  <label class="field"><span>Driver override torque</span><input id="limit-driver-allowance" type="number" step="any" min="0" placeholder="50"></label>
+                  <label class="field"><span>Actuator delay · s</span><input id="limit-actuator-delay" type="number" step="any" min="0" max="2" placeholder="0.1"></label>
+                  <label class="field"><span>Steer limit timer · s</span><input id="limit-steer-timer" type="number" step="any" min="0" placeholder="0.4"></label>
+                  <label class="field"><span>Accel min · m/s²</span><input id="limit-accel-min" type="number" step="any" max="0" placeholder="-3.5"></label>
+                  <label class="field"><span>Accel max · m/s²</span><input id="limit-accel-max" type="number" step="any" min="0" placeholder="2.0"></label>
+                </div>
+
+                <div class="field-grid four-fields">
+                  <label class="field">
+                    <span>Lateral tuning</span>
+                    <select id="tune-lat-kind">
+                      <option value="">Not tuned</option>
+                      <option value="torque">torque</option>
+                      <option value="pid">pid</option>
+                      <option value="angle">angle</option>
+                    </select>
+                  </label>
+                  <label class="field"><span>Max lateral accel</span><input id="tune-lat-accel" type="number" step="any" min="0" placeholder="2.5"></label>
+                  <label class="field"><span>Friction</span><input id="tune-lat-friction" type="number" step="any" min="0" placeholder="0.1"></label>
+                  <label class="field"><span>Longitudinal gain (ki)</span><input id="tune-long-gains" type="number" step="any" min="0" placeholder="0.5"></label>
+                </div>
+
+                <div class="field-grid four-fields">
+                  <label class="field">
+                    <span>opendbc safety model</span>
+                    <input id="safety-model" list="safety-models" placeholder="hyundaiCanfd">
+                    <datalist id="safety-models"></datalist>
+                    <small>Must exist in opendbc/safety and be reviewed for this car.
+                      <button class="text-button" data-help-topic="safety" type="button">What this actually is →</button>
+                    </small>
+                  </label>
+                  <label class="field"><span>Safety param</span><input id="safety-param" type="number" min="0" placeholder="0"></label>
+                </div>
+
+                <div class="manual-columns notes-columns">
+                  <label class="field">
+                    <span>Actuation research notes</span>
+                    <textarea id="manual-actuation" rows="4" placeholder="Known command addresses, OEM documents, bench observations… one item per line"></textarea>
+                  </label>
+                  <label class="field">
+                    <span>Safety engineering notes</span>
+                    <textarea id="manual-safety" rows="4" placeholder="Hazards, required limits, review findings… one item per line"></textarea>
+                  </label>
+                </div>
+            </div>
+          </details>
+
+          <details class="probe-card" id="probe-card">
+            <summary>
+              <span class="warning-glyph">!</span>
+              <span><strong>Optional: collect ECU firmware</strong><small>This transmits read-only diagnostic queries while the car is parked.</small></span>
+              <span>Open guarded tool <span class="chevron" aria-hidden="true"></span></span>
+            </summary>
+            <div class="probe-content">
+              <div class="safety-note">
+                <strong>Before continuing</strong>
+                <p>Only do this on a car you own or are authorized to work on. Park safely, select Park, and never probe while anyone is driving.</p>
+                <p>This step <strong>transmits</strong>, so it needs a SocketCAN interface with <code>listen-only off</code> — a passive panda capture cannot do it.</p>
+                <button class="text-button" data-help-topic="probe" type="button">How to set the hardware up for this →</button>
+              </div>
+              <label class="field">
+                <span>SocketCAN interface</span>
+                <input id="probe-interface" value="can0">
+              </label>
+              <label class="check-row">
+                <input id="probe-authorised" type="checkbox">
+                <span>I own this vehicle or have explicit authorization.</span>
+              </label>
+              <label class="check-row">
+                <input id="probe-parked" type="checkbox">
+                <span>The vehicle is parked and nobody is driving it.</span>
+              </label>
+              <button class="button button-warning" id="probe-button" type="button">Run read-only firmware probe</button>
+            </div>
+          </details>
+        </div>
+
+        <div class="panel-actions">
+          <button class="button button-quiet" data-go-step="details" type="button">← Vehicle details</button>
+          <button class="button button-primary" id="generate-button" type="button" disabled>Generate read-only port <span>→</span></button>
+        </div>
+      </section>
+
+      <section class="panel" data-panel="port">
+        <div class="panel-heading">
+          <p class="kicker">Step 4 of 4</p>
+          <h1>Your bootstrap port</h1>
+          <p class="lede">AutoDistill packages the proven evidence and makes every unknown conspicuous. The result is deliberately read-only.</p>
+        </div>
+
+        <div class="empty-result" id="port-empty">
+          <div class="package-visual" aria-hidden="true"><span>AD</span></div>
+          <h2>No port generated yet</h2>
+          <p>Analyze the capture first, then generate the package.</p>
+          <button class="button button-primary" data-go-step="analysis" type="button">Go to analysis</button>
+        </div>
+
+        <div id="port-results" class="hidden">
+          <div class="success-card">
+            <div class="success-mark">✓</div>
+            <div>
+              <p class="eyebrow">Package ready</p>
+              <h2 id="port-title">Read-only port generated</h2>
+              <p>Safe default: <strong>dashcam-only, no CAN messages transmitted.</strong></p>
+            </div>
+            <a class="button button-primary" id="download-port" href="#">Download ZIP ↓</a>
+          </div>
+
+          <div class="validation-card hidden" id="validation-card">
+            <div class="validation-head">
+              <span class="validation-mark" id="validation-mark">✓</span>
+              <div>
+                <strong id="validation-title">Bindings check out</strong>
+                <small id="validation-detail"></small>
+              </div>
+            </div>
+            <div class="validation-list" id="validation-list"></div>
+          </div>
+
+          <div class="port-layout">
+            <div class="result-card">
+              <div class="result-card-heading">
+                <div><p class="eyebrow">Included</p><h2>Evidence package</h2></div>
+                <span class="read-only-badge">Read only</span>
+              </div>
+              <div class="package-list" id="package-list"></div>
+            </div>
+            <div class="result-card review-card">
+              <div class="result-card-heading">
+                <div><p class="eyebrow">Before control</p><h2>Engineering checklist</h2></div>
+              </div>
+              <div class="review-list" id="port-review-list"></div>
+            </div>
+          </div>
+
+          <details class="install-card">
+            <summary>
+              <span><strong>Install into a local OpenDBC checkout</strong><small>AutoDistill can copy and register the generated files for you.</small></span>
+              <span>Advanced <span class="chevron" aria-hidden="true"></span></span>
+            </summary>
+            <div class="install-content">
+              <div class="field-row">
+                <label class="field grow">
+                  <span>Absolute OpenDBC directory</span>
+                  <input id="opendbc-path" placeholder="/home/you/src/opendbc">
+                </label>
+                <button class="button button-secondary" id="install-button" type="button">Install package</button>
+              </div>
+              <label class="check-row danger-check">
+                <input id="install-confirm" type="checkbox">
+                <span>I understand this modifies my local OpenDBC checkout. Existing differing files will be preserved.</span>
+              </label>
+            </div>
+          </details>
+        </div>
+
+        <div class="panel-actions">
+          <button class="button button-quiet" data-go-step="analysis" type="button">← Back to evidence</button>
+          <button class="button button-secondary" id="new-project-button" type="button">Start another vehicle</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal-backdrop hidden" id="help-modal" role="dialog" aria-modal="true" aria-labelledby="help-title">
+    <div class="modal">
+      <button class="modal-close" id="help-close" type="button" aria-label="Close help">×</button>
+      <p class="kicker">Plain-language guide</p>
+      <h2 id="help-title">A good capture is varied and synchronized</h2>
+      <div id="help-content"></div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop hidden" id="project-modal" role="dialog" aria-modal="true" aria-labelledby="project-title">
+    <div class="modal project-modal">
+      <button class="modal-close" id="project-close" type="button" aria-label="Close projects">×</button>
+      <p class="kicker">Local projects</p>
+      <h2 id="project-title">Choose a vehicle project</h2>
+      <div class="project-list" id="project-list"></div>
+      <button class="button button-primary button-wide" id="create-project-button" type="button">+ New vehicle project</button>
+    </div>
+  </div>
+
+  <div class="toast-stack" id="toast-stack" aria-live="polite"></div>
+  <script src="/static/app.js" defer></script>
+</body>
+</html>

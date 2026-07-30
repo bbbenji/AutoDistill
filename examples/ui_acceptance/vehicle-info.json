@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "vehicle_specs": {
+    "mass_kg": 1655.61175,
+    "wheelbase_m": 2.65,
+    "steer_ratio": 16.88,
+    "docs_package": "Toyota Safety Sense P",
+    "center_to_front_m": 1.166,
+    "tire_stiffness_factor": 0.5533,
+    "harness": "toyota_a"
+  },
+  "ecu_types": {},
+  "signals": [
+    {"bus": 0, "address": "0x25", "start_bit": 4, "length": 12, "name": "STEER_ANGLE", "unit": "deg", "scale": 1.5, "signed": true, "byte_order": "big"},
+    {"bus": 0, "address": "0x25", "start_bit": 32, "length": 4, "name": "STEER_FRACTION", "unit": "deg", "scale": 0.1, "signed": true, "byte_order": "big"},
+    {"bus": 0, "address": "0x25", "start_bit": 36, "length": 12, "name": "STEER_RATE", "unit": "deg/s", "scale": 1.0, "signed": true, "byte_order": "big"},
+
+    {"bus": 0, "address": "0xAA", "start_bit": 1, "length": 15, "name": "WHEEL_SPEED_FR", "unit": "km/h", "scale": 0.01, "offset": -67.67, "signed": false, "byte_order": "big"},
+    {"bus": 0, "address": "0xAA", "start_bit": 17, "length": 15, "name": "WHEEL_SPEED_FL", "unit": "km/h", "scale": 0.01, "offset": -67.67, "signed": false, "byte_order": "big"},
+    {"bus": 0, "address": "0xAA", "start_bit": 33, "length": 15, "name": "WHEEL_SPEED_RR", "unit": "km/h", "scale": 0.01, "offset": -67.67, "signed": false, "byte_order": "big"},
+    {"bus": 0, "address": "0xAA", "start_bit": 49, "length": 15, "name": "WHEEL_SPEED_RL", "unit": "km/h", "scale": 0.01, "offset": -67.67, "signed": false, "byte_order": "big"},
+
+    {"bus": 0, "address": "0x1D2", "start_bit": 2, "length": 1, "name": "CRUISE_ACTIVE", "signed": false, "byte_order": "big"},
+    {"bus": 0, "address": "0x1D2", "start_bit": 3, "length": 1, "name": "GAS_RELEASED", "signed": false, "byte_order": "big"},
+    {"bus": 0, "address": "0x1D2", "start_bit": 48, "length": 4, "name": "CRUISE_STATE", "signed": false, "byte_order": "big"},
+    {"bus": 0, "address": "0x1D3", "start_bit": 8, "length": 1, "name": "MAIN_ON", "signed": false, "byte_order": "big"},
+    {"bus": 0, "address": "0x1D3", "start_bit": 16, "length": 8, "name": "SET_SPEED", "unit": "km/h", "signed": false, "byte_order": "big"},
+
+    {"bus": 0, "address": "0x224", "start_bit": 2, "length": 1, "name": "BRAKE_PRESSED", "signed": false, "byte_order": "big"},
+    {"bus": 0, "address": "0x224", "start_bit": 44, "length": 12, "name": "BRAKE_PRESSURE", "signed": false, "byte_order": "big"},
+    {"bus": 0, "address": "0x260", "start_bit": 8, "length": 16, "name": "STEER_TORQUE_DRIVER", "signed": true, "byte_order": "big"},
+    {"bus": 0, "address": "0x260", "start_bit": 24, "length": 16, "name": "STEER_ANGLE", "unit": "deg", "scale": 0.0573, "signed": true, "byte_order": "big"},
+    {"bus": 0, "address": "0x260", "start_bit": 40, "length": 16, "name": "STEER_TORQUE_EPS", "signed": true, "byte_order": "big"},
+    {"bus": 0, "address": "0x3BC", "start_bit": 10, "length": 6, "name": "GEAR", "signed": false, "byte_order": "big"},
+    {"bus": 0, "address": "0x614", "start_bit": 26, "length": 2, "name": "TURN_SIGNALS", "signed": false, "byte_order": "big"},
+    {"bus": 0, "address": "0x620", "start_bit": 42, "length": 4, "name": "DOORS_OPEN", "signed": false, "byte_order": "big"},
+    {"bus": 0, "address": "0x620", "start_bit": 57, "length": 1, "name": "SEATBELT_DRIVER_UNLATCHED", "signed": false, "byte_order": "big"},
+
+    {"bus": 0, "address": "0x2E4", "start_bit": 0, "length": 1, "name": "SET_ME_1", "signed": false, "byte_order": "big"},
+    {"bus": 0, "address": "0x2E4", "start_bit": 7, "length": 1, "name": "STEER_REQUEST", "signed": false, "byte_order": "big"},
+    {"bus": 0, "address": "0x2E4", "start_bit": 8, "length": 16, "name": "STEER_TORQUE_CMD", "signed": true, "byte_order": "big"},
+    {"bus": 0, "address": "0x2E4", "start_bit": 24, "length": 8, "name": "LKA_STATE", "signed": false, "byte_order": "big"},
+
+    {"bus": 0, "address": "0x343", "start_bit": 0, "length": 16, "name": "ACCEL_CMD", "unit": "m/s^2", "scale": 0.001, "signed": true, "byte_order": "big"},
+    {"bus": 0, "address": "0x343", "start_bit": 16, "length": 2, "name": "ACC_TYPE", "signed": false, "byte_order": "big"},
+    {"bus": 0, "address": "0x343", "start_bit": 18, "length": 1, "name": "MINI_CAR", "signed": false, "byte_order": "big"},
+    {"bus": 0, "address": "0x343", "start_bit": 19, "length": 1, "name": "DISTANCE", "signed": false, "byte_order": "big"},
+    {"bus": 0, "address": "0x343", "start_bit": 20, "length": 1, "name": "RADAR_DIRTY", "signed": false, "byte_order": "big"},
+    {"bus": 0, "address": "0x343", "start_bit": 21, "length": 1, "name": "ACC_MALFUNCTION", "signed": false, "byte_order": "big"},
+    {"bus": 0, "address": "0x343", "start_bit": 22, "length": 2, "name": "ALLOW_LONG_PRESS", "signed": false, "byte_order": "big"},
+    {"bus": 0, "address": "0x343", "start_bit": 24, "length": 1, "name": "RELEASE_STANDSTILL", "signed": false, "byte_order": "big"},
+    {"bus": 0, "address": "0x343", "start_bit": 25, "length": 1, "name": "PERMIT_BRAKING", "signed": false, "byte_order": "big"},
+    {"bus": 0, "address": "0x343", "start_bit": 26, "length": 1, "name": "LEAD_VEHICLE_STOPPED", "signed": false, "byte_order": "big"},
+    {"bus": 0, "address": "0x343", "start_bit": 30, "length": 1, "name": "ACC_CUT_IN", "signed": false, "byte_order": "big"},
+    {"bus": 0, "address": "0x343", "start_bit": 31, "length": 1, "name": "CANCEL_REQ", "signed": false, "byte_order": "big"},
+    {"bus": 0, "address": "0x343", "start_bit": 32, "length": 8, "name": "ITS_CONNECT_LEAD", "signed": false, "byte_order": "big"},
+    {"bus": 0, "address": "0x343", "start_bit": 40, "length": 8, "name": "ACCEL_CMD_ALT", "unit": "m/s^2", "scale": 0.05, "signed": true, "byte_order": "big"}
+  ],
+  "carstate": [
+    {"target": "ret.vEgoRaw", "bus": 0, "address": "0xAA", "signal": "WHEEL_SPEED_FR", "transform": "kph_to_ms", "note": "Official port averages all four wheel speeds; the generated schema accepts one source."},
+    {"target": "ret.steeringAngleDeg", "bus": 0, "address": "0x25", "signal": "STEER_ANGLE", "transform": "identity", "note": "Official port adds STEER_FRACTION and later applies the precise-angle offset."},
+    {"target": "ret.steeringRateDeg", "bus": 0, "address": "0x25", "signal": "STEER_RATE", "transform": "identity"},
+    {"target": "ret.steeringTorque", "bus": 0, "address": "0x260", "signal": "STEER_TORQUE_DRIVER", "transform": "identity"},
+    {"target": "ret.steeringTorqueEps", "bus": 0, "address": "0x260", "signal": "STEER_TORQUE_EPS", "transform": "scale", "scale": 0.73},
+    {"target": "ret.gasPressed", "bus": 0, "address": "0x1D2", "signal": "GAS_RELEASED", "transform": "invert_bool"},
+    {"target": "ret.brakePressed", "bus": 0, "address": "0x224", "signal": "BRAKE_PRESSED", "transform": "bool"},
+    {"target": "ret.gearShifter", "bus": 0, "address": "0x3BC", "signal": "GEAR", "transform": "gear_map", "gear_map": {"0": "drive", "1": "sport", "8": "neutral", "16": "reverse", "32": "park"}},
+    {"target": "ret.cruiseState.enabled", "bus": 0, "address": "0x1D2", "signal": "CRUISE_ACTIVE", "transform": "bool"},
+    {"target": "ret.cruiseState.available", "bus": 0, "address": "0x1D3", "signal": "MAIN_ON", "transform": "bool"},
+    {"target": "ret.cruiseState.speed", "bus": 0, "address": "0x1D3", "signal": "SET_SPEED", "transform": "kph_to_ms"},
+    {"target": "ret.cruiseState.standstill", "bus": 0, "address": "0x1D2", "signal": "CRUISE_STATE", "transform": "equals", "threshold": 7},
+    {"target": "ret.doorOpen", "bus": 0, "address": "0x620", "signal": "DOORS_OPEN", "transform": "bool"},
+    {"target": "ret.seatbeltUnlatched", "bus": 0, "address": "0x620", "signal": "SEATBELT_DRIVER_UNLATCHED", "transform": "bool"},
+    {"target": "ret.leftBlinker", "bus": 0, "address": "0x614", "signal": "TURN_SIGNALS", "transform": "equals", "threshold": 1},
+    {"target": "ret.rightBlinker", "bus": 0, "address": "0x614", "signal": "TURN_SIGNALS", "transform": "equals", "threshold": 2}
+  ],
+  "actuation": {
+    "lateral": {
+      "bus": 0,
+      "address": "0x2E4",
+      "message": "MSG_2E4",
+      "frequency_hz": 100,
+      "signals": {"SET_ME_1": 1, "STEER_REQUEST": "lat_active", "STEER_TORQUE_CMD": "apply_torque", "LKA_STATE": 0},
+      "counter_signal": "COUNTER",
+      "checksum_signal": "CHECKSUM",
+      "note": "Matches Toyota STEERING_LKA in the official DBC and the 100 Hz commands recorded in this route."
+    },
+    "longitudinal": {
+      "bus": 0,
+      "address": "0x343",
+      "message": "MSG_343",
+      "frequency_hz": 33.333333333333336,
+      "signals": {"ACCEL_CMD": "accel", "ACC_TYPE": 1, "MINI_CAR": 1, "ALLOW_LONG_PRESS": 3, "RELEASE_STANDSTILL": 1, "PERMIT_BRAKING": 1},
+      "checksum_signal": "CHECKSUM",
+      "note": "Fixed fields reproduce the observed 2018 route. Current opendbc supplies several of them dynamically."
+    }
+  },
+  "limits": {
+    "steer_max": 1500,
+    "steer_delta_up": 15,
+    "steer_delta_down": 25,
+    "steer_driver_allowance": 100,
+    "steer_step": 1,
+    "steer_actuator_delay": 0.12,
+    "steer_limit_timer": 0.4,
+    "accel_min": -3.5,
+    "accel_max": 1.5,
+    "min_steer_speed_ms": 0,
+    "min_enable_speed_ms": 8.49376
+  },
+  "tuning": {
+    "lateral": {"kind": "torque", "max_lateral_accel": 2.085695074355425, "friction": 0.13339165270103975},
+    "longitudinal": {"kp": 0.0, "ki": 3.6}
+  },
+  "safety": {"model": "toyota", "param": 329},
+  "engineering": {
+    "actuation_notes": [
+      "Acceptance-test values come from the pinned official Toyota RAV4 port and the route's real logged commands; do not reuse them for another vehicle.",
+      "The generic generated controller is intentionally simpler than Toyota's hand-maintained official controller. Compare differences listed in README.md."
+    ],
+    "safety_notes": [
+      "This fixture exercises code generation only. AutoDistill always leaves safe_for_control false; this is not a safety approval.",
+      "Safety param 329 is EPS scale 73 plus Toyota ALT_BRAKE (1 << 8), matching toyota_new_mc_pt_generated."
+    ],
+    "sources": [
+      "https://github.com/commaai/comma2k19/tree/4c7f1a6e1957745beadc1def0e7225f559b09a2a/Example_1",
+      "https://github.com/commaai/opendbc/tree/aedd88ef0b75e5032a277fcf7b0c928ad4e54ddf/opendbc/car/toyota",
+      "https://github.com/commaai/opendbc/blob/aedd88ef0b75e5032a277fcf7b0c928ad4e54ddf/opendbc/dbc/generator/toyota/toyota_new_mc_pt.dbc"
+    ]
+  }
+}

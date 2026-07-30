@@ -1,0 +1,3010 @@
+:root {
+  color-scheme: light;
+  --ink: #17201e;
+  /* Both carry small text (9-11px), so both need 4.5:1. --faint was #909995,
+     which is 2.9:1 on white -- it read as decoration but is used for the hints
+     that explain what a field wants. --muted moves down with it to keep the
+     two tiers apart. */
+  --muted: #5a6561;
+  --faint: #6a736f;
+  --line: #dce2dd;
+  --line-dark: #c6cec8;
+  --paper: #f4f5f0;
+  --surface: #ffffff;
+  --surface-2: #f9faf7;
+  --dark: #101a18;
+  --dark-2: #1a2723;
+  --green: #1f765b;
+  --green-2: #155843;
+  /* --green is mixed for light surfaces; on the dark sidebar it falls to
+     2.7:1, so links there use this instead (7.8:1). */
+  --green-on-dark: #7fc9a6;
+  --green-soft: #dff0e8;
+  --lime: #c9f36b;
+  /* Serves as both badge text on --amber-soft and the fill behind white text
+     on .button-warning, and at #c77d1a it failed in both directions (3.0:1 and
+     3.3:1). Darkening is the one change that fixes both. */
+  --amber: #8a5510;
+  --amber-soft: #fff2d8;
+  --red: #a84133;
+  --red-soft: #fbe5e0;
+  --blue: #246a83;
+  --shadow: 0 18px 45px rgba(26, 39, 35, .08);
+  --shadow-small: 0 8px 22px rgba(26, 39, 35, .07);
+  --radius: 18px;
+  --radius-small: 11px;
+  font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  background: var(--paper);
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 74% -10%, rgba(201, 243, 107, .12), transparent 28rem),
+    var(--paper);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button,
+label[for],
+label:has(input[type="file"]) {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+a {
+  touch-action: manipulation;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+summary:focus-visible {
+  outline: 3px solid rgba(31, 118, 91, .22);
+  outline-offset: 2px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.app-shell {
+  display: grid;
+  grid-template:
+    "top top" 68px
+    "side main" calc(100vh - 68px)
+    / 278px minmax(0, 1fr);
+}
+
+.topbar {
+  grid-area: top;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: 278px 1fr auto;
+  align-items: center;
+  min-height: 68px;
+  padding: 0 24px 0 25px;
+  color: #f6fbf7;
+  background: var(--dark);
+  border-bottom: 1px solid rgba(255, 255, 255, .08);
+}
+
+.brand {
+  display: inline-flex;
+  gap: 12px;
+  align-items: center;
+  width: fit-content;
+  color: inherit;
+  text-decoration: none;
+}
+
+.brand-mark {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 4px);
+  gap: 3px;
+  align-items: end;
+  width: 28px;
+  height: 28px;
+  padding: 5px;
+  border: 1px solid rgba(201, 243, 107, .58);
+  border-radius: 8px;
+  transform: rotate(45deg);
+}
+
+.brand-mark span {
+  display: block;
+  width: 4px;
+  background: var(--lime);
+  border-radius: 4px;
+}
+
+.brand-mark span:nth-child(1) { height: 7px; }
+.brand-mark span:nth-child(2) { height: 15px; }
+.brand-mark span:nth-child(3) { height: 10px; }
+
+.brand-word {
+  font-size: 19px;
+  font-weight: 720;
+  letter-spacing: -.035em;
+}
+
+.brand-word span {
+  color: var(--lime);
+}
+
+.topbar-center {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.local-pill {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 10px;
+  color: #c6d1cc;
+  background: rgba(255, 255, 255, .055);
+  border: 1px solid rgba(255, 255, 255, .09);
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 630;
+}
+
+.local-pill i {
+  width: 7px;
+  height: 7px;
+  background: var(--lime);
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px rgba(201, 243, 107, .12);
+}
+
+.save-state {
+  color: #8c9b95;
+  font-size: 12px;
+}
+
+.topbar-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.icon-button {
+  width: 31px;
+  height: 31px;
+  padding: 0;
+  color: #d7e0dc;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, .18);
+  border-radius: 50%;
+  cursor: pointer;
+  font-weight: 720;
+}
+
+.icon-button:hover {
+  color: var(--lime);
+  border-color: var(--lime);
+}
+
+.version {
+  color: #7f8e88;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+}
+
+.sidebar {
+  grid-area: side;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 28px 19px 22px;
+  color: #e7eeea;
+  background: var(--dark);
+}
+
+.project-heading {
+  padding: 0 7px 24px;
+}
+
+.eyebrow,
+.kicker {
+  margin: 0 0 7px;
+  color: var(--green);
+  font-size: 11px;
+  font-weight: 780;
+  letter-spacing: .13em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.project-heading .eyebrow {
+  color: #73847d;
+}
+
+.project-picker {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 3px 0;
+  overflow: hidden;
+  color: #f8faf9;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.project-picker span:first-child {
+  overflow: hidden;
+  font-size: 15px;
+  font-weight: 660;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.project-picker span:last-child {
+  color: #7e9088;
+}
+
+.steps {
+  display: grid;
+  gap: 5px;
+}
+
+.step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 31px 1fr 5px;
+  gap: 10px;
+  align-items: center;
+  min-height: 65px;
+  padding: 9px 11px;
+  color: #899991;
+  background: transparent;
+  border: 0;
+  border-radius: 11px;
+  cursor: pointer;
+  text-align: left;
+  transition: color .18s, background .18s;
+}
+
+.step:hover {
+  color: #d5dfda;
+  background: rgba(255, 255, 255, .035);
+}
+
+.step.active {
+  color: #f7faf8;
+  background: var(--dark-2);
+}
+
+.step.active::before {
+  position: absolute;
+  top: 13px;
+  bottom: 13px;
+  left: 0;
+  width: 3px;
+  background: var(--lime);
+  border-radius: 0 3px 3px 0;
+  content: "";
+}
+
+.step.complete .step-number {
+  color: var(--dark);
+  background: var(--lime);
+  border-color: var(--lime);
+}
+
+.step.complete .step-number::after {
+  content: "✓";
+}
+
+.step.complete .step-number {
+  font-size: 0;
+}
+
+.step.complete .step-number::after {
+  font-size: 11px;
+}
+
+.step-number {
+  display: grid;
+  place-items: center;
+  width: 27px;
+  height: 27px;
+  color: #75867e;
+  border: 1px solid #34443e;
+  border-radius: 8px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10px;
+}
+
+.step strong,
+.step small {
+  display: block;
+}
+
+.step strong {
+  margin-bottom: 1px;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.step small {
+  color: #788880;
+  font-size: 11px;
+}
+
+.step > i {
+  width: 5px;
+  height: 5px;
+  background: currentColor;
+  border-radius: 50%;
+  opacity: .25;
+}
+
+.step.active > i {
+  color: var(--lime);
+  opacity: 1;
+}
+
+.guide-toggle {
+  display: inline-flex;
+  gap: 7px;
+  align-items: center;
+  padding: 6px 12px;
+  color: #93a49d;
+  background: rgba(255, 255, 255, .05);
+  border: 1px solid rgba(255, 255, 255, .09);
+  border-radius: 99px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 640;
+}
+
+.guide-toggle .guide-dot {
+  width: 7px;
+  height: 7px;
+  background: #55645e;
+  border-radius: 50%;
+}
+
+.guide-toggle.active {
+  color: var(--dark);
+  background: var(--lime);
+  border-color: var(--lime);
+}
+
+.guide-toggle.active .guide-dot {
+  background: var(--dark);
+}
+
+.guide {
+  margin: 16px 0 18px;
+  padding: 15px 14px 13px;
+  background: rgba(201, 243, 107, .07);
+  border: 1px solid rgba(201, 243, 107, .2);
+  border-radius: 13px;
+}
+
+.guide-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.guide-head .eyebrow {
+  margin: 0;
+  color: var(--lime);
+}
+
+.guide-close {
+  padding: 0;
+  color: #7e8f88;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font-size: 9px;
+  text-decoration: underline;
+}
+
+.guide-progress {
+  height: 4px;
+  margin: 11px 0 7px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, .09);
+  border-radius: 99px;
+}
+
+.guide-progress i {
+  display: block;
+  height: 100%;
+  background: var(--lime);
+  border-radius: 99px;
+  transition: width .35s ease;
+}
+
+.guide-count {
+  margin: 0 0 12px;
+  color: #8b9a94;
+  font-size: 9px;
+  font-weight: 650;
+}
+
+.guide h3 {
+  margin: 0 0 6px;
+  color: #f2f7f3;
+  font-size: 14px;
+  letter-spacing: -.01em;
+}
+
+#guide-detail {
+  margin: 0 0 8px;
+  color: #a9b8b2;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.guide-why {
+  margin: 0 0 12px;
+  padding-left: 9px;
+  color: #95a29c;
+  border-left: 2px solid rgba(201, 243, 107, .35);
+  font-size: 10px;
+  font-style: italic;
+  line-height: 1.45;
+}
+
+.guide .button-primary {
+  padding: 9px 12px;
+  font-size: 11px;
+}
+
+/* Both are .text-button, whose --green is meant for white cards. */
+.guide .text-button {
+  color: var(--green-on-dark);
+}
+
+.guide-help {
+  display: block;
+  margin: 0 0 11px;
+  font-size: 10px;
+  text-align: left;
+}
+
+.guide-skip {
+  display: block;
+  margin: 8px auto 0;
+  font-size: 9px;
+}
+
+/* The help modal carries terminal commands for hardware setup. */
+#help-content pre {
+  margin: 10px 0;
+  padding: 11px 13px;
+  overflow-x: auto;
+  color: #e7eeea;
+  background: var(--dark);
+  border-radius: 9px;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+#help-content pre code {
+  padding: 0;
+  color: inherit;
+  background: none;
+}
+
+.guide-list {
+  margin: 13px 0 0;
+  padding: 12px 0 0;
+  list-style: none;
+  border-top: 1px solid rgba(255, 255, 255, .07);
+}
+
+.guide-item {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 4px 0 4px 19px;
+  color: #8d9a94;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font-size: 10px;
+  line-height: 1.4;
+  text-align: left;
+}
+
+.guide-item:disabled {
+  cursor: default;
+  opacity: .55;
+}
+
+.guide-item::before {
+  position: absolute;
+  top: 4px;
+  left: 0;
+  color: #606f68;
+  content: "○";
+}
+
+.guide-item.done {
+  color: #76867e;
+}
+
+.guide-item.done::before {
+  color: var(--lime);
+  content: "●";
+}
+
+.guide-item.current {
+  color: #eef5ef;
+  font-weight: 700;
+}
+
+.guide-item.current::before {
+  color: var(--lime);
+  content: "▸";
+}
+
+.guide-item.optional::after {
+  margin-left: 5px;
+  color: #76867e;
+  content: "optional";
+  font-size: 8px;
+  text-transform: uppercase;
+}
+
+/* Answers "which control did it mean?" and then gets out of the way. */
+@keyframes spotlight-ring {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(31, 118, 91, 0); }
+  15%, 70% { box-shadow: 0 0 0 4px rgba(31, 118, 91, .35); }
+}
+
+.spotlight {
+  animation: spotlight-ring 2.4s ease-in-out;
+  border-radius: 11px;
+}
+
+.privacy-card {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 11px;
+  margin-top: auto;
+  padding: 17px 14px;
+  color: #aebcb6;
+  background: rgba(201, 243, 107, .055);
+  border: 1px solid rgba(201, 243, 107, .12);
+  border-radius: 13px;
+}
+
+.shield {
+  display: grid;
+  place-items: center;
+  width: 27px;
+  height: 27px;
+  color: var(--lime);
+  border: 1px solid rgba(201, 243, 107, .4);
+  border-radius: 9px;
+  font-size: 10px;
+}
+
+.privacy-card strong {
+  display: block;
+  color: #e7eee9;
+  font-size: 11px;
+}
+
+.privacy-card p {
+  margin: 4px 0 0;
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.main {
+  grid-area: main;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
+.panel {
+  display: none;
+  width: min(1220px, calc(100% - 64px));
+  min-height: 100%;
+  margin: 0 auto;
+  padding: 55px 0 44px;
+}
+
+.panel.active {
+  display: block;
+}
+
+.panel-heading {
+  margin-bottom: 35px;
+}
+
+.split-heading,
+.result-heading {
+  display: flex;
+  gap: 50px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.panel-heading h1 {
+  margin: 0;
+  font-size: clamp(32px, 4vw, 52px);
+  font-weight: 670;
+  letter-spacing: -.052em;
+  line-height: 1.03;
+}
+
+.lede {
+  max-width: 750px;
+  margin: 15px 0 0;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+.stage-glyph {
+  position: relative;
+  flex: 0 0 164px;
+  width: 164px;
+  height: 96px;
+  overflow: hidden;
+  background: var(--dark);
+  border-radius: 16px;
+  box-shadow: var(--shadow-small);
+}
+
+.road-line {
+  position: absolute;
+  top: -23px;
+  bottom: -23px;
+  left: 51px;
+  width: 60px;
+  border-right: 1px solid #45514d;
+  border-left: 1px solid #45514d;
+  transform: skewX(-13deg);
+}
+
+.road-line::after {
+  position: absolute;
+  top: 5px;
+  bottom: 5px;
+  left: 29px;
+  border-left: 2px dashed rgba(201, 243, 107, .75);
+  content: "";
+}
+
+.pulse-line {
+  position: absolute;
+  right: 16px;
+  bottom: 17px;
+  left: 16px;
+  height: 23px;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 130 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 15h27l5-9 8 17 8-15 7 7h20l4-7 7 14 8-13 5 6h31' fill='none' stroke='%23c9f36b' stroke-width='2'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+  opacity: .78;
+}
+
+.choice-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.choice-card,
+.form-card,
+.guidance-card,
+.result-card,
+.install-card,
+.probe-card,
+/* On step 2 this block sat inside a white card and inherited its surface. On
+   step 3 it is a sibling of the result cards, directly on the page, so it has
+   to carry its own. */
+#port-facts {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: 0 1px 0 rgba(18, 31, 27, .02);
+}
+
+.choice-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 425px;
+  padding: 27px;
+  transition: transform .2s, box-shadow .2s, border-color .2s;
+}
+
+.choice-card:hover {
+  border-color: var(--line-dark);
+  box-shadow: var(--shadow-small);
+  transform: translateY(-2px);
+}
+
+.choice-card.featured {
+  background:
+    linear-gradient(145deg, rgba(201, 243, 107, .16), transparent 50%),
+    var(--surface);
+  border-color: #b9d6bf;
+}
+
+.card-tag {
+  position: absolute;
+  top: 17px;
+  right: 18px;
+  padding: 5px 8px;
+  color: var(--green-2);
+  background: var(--green-soft);
+  border-radius: 99px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.choice-icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 22px;
+  color: var(--green);
+  background: var(--green-soft);
+  border-radius: 14px;
+  font-size: 19px;
+  font-weight: 750;
+}
+
+.featured .choice-icon {
+  color: var(--dark);
+  background: var(--lime);
+}
+
+.choice-card h2,
+.result-card h2,
+.success-card h2,
+.empty-result h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 680;
+  letter-spacing: -.025em;
+}
+
+.choice-card > p {
+  margin: 10px 0 18px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.58;
+}
+
+code {
+  padding: 1px 4px;
+  color: var(--green-2);
+  background: #edf2ec;
+  border-radius: 4px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: .9em;
+}
+
+.mini-list {
+  display: grid;
+  gap: 6px;
+  margin: 0 0 24px;
+  padding: 0;
+  color: var(--muted);
+  font-size: 12px;
+  list-style: none;
+}
+
+.mini-list li::before {
+  margin-right: 8px;
+  color: var(--green);
+  content: "✓";
+  font-weight: 800;
+}
+
+.button {
+  display: inline-flex;
+  gap: 13px;
+  align-items: center;
+  justify-content: center;
+  min-height: 43px;
+  padding: 10px 17px;
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid var(--line-dark);
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 710;
+  text-decoration: none;
+  transition: background .16s, border-color .16s, transform .12s;
+}
+
+.button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: .42;
+}
+
+.button-primary {
+  color: #f5faf7;
+  background: var(--green);
+  border-color: var(--green);
+}
+
+.button-primary:hover:not(:disabled) {
+  background: var(--green-2);
+  border-color: var(--green-2);
+}
+
+.button-secondary {
+  background: var(--surface);
+}
+
+.button-secondary:hover:not(:disabled) {
+  border-color: var(--green);
+}
+
+.button-warning {
+  color: #fff;
+  background: var(--amber);
+  border-color: var(--amber);
+}
+
+.button-quiet {
+  color: var(--muted);
+  border-color: transparent;
+}
+
+.button-quiet:hover:not(:disabled) {
+  color: var(--ink);
+  background: #eaede8;
+}
+
+.button-wide {
+  width: 100%;
+  margin-top: auto;
+}
+
+.button-small {
+  min-height: 35px;
+  padding: 7px 12px;
+  white-space: nowrap;
+}
+
+.dropzone {
+  display: grid;
+  place-items: center;
+  min-height: 144px;
+  margin-top: auto;
+  padding: 17px;
+  text-align: center;
+  border: 1px dashed #b7c3bc;
+  border-radius: 13px;
+  cursor: pointer;
+  transition: background .16s, border-color .16s;
+}
+
+.dropzone:hover,
+.dropzone.dragging {
+  background: #f1f8f3;
+  border-color: var(--green);
+}
+
+.dropzone strong,
+.dropzone span,
+.dropzone small {
+  display: block;
+}
+
+.dropzone strong {
+  font-size: 12px;
+}
+
+.dropzone span {
+  color: var(--green);
+  font-size: 11px;
+}
+
+.dropzone small {
+  color: var(--faint);
+  font-size: 9px;
+}
+
+.segmented {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin: auto 0 14px;
+  padding: 3px;
+  background: #eef1ec;
+  border-radius: 9px;
+}
+
+.segmented button {
+  padding: 6px;
+  color: var(--muted);
+  background: transparent;
+  border: 0;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.segmented button.active {
+  color: var(--ink);
+  background: var(--surface);
+  box-shadow: 0 2px 7px rgba(18, 31, 27, .08);
+}
+
+/* One field per row. Side by side, this sits in a third of a three-card grid,
+   which left the duration select about 130px wide -- not enough for "15
+   minutes - recommended", so the guidance in every option was clipped away. */
+.compact-form {
+  display: grid;
+  gap: 9px;
+  margin-bottom: 12px;
+}
+
+.compact-form label {
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.compact-form input,
+.compact-form select {
+  width: 100%;
+  height: 35px;
+  margin-top: 4px;
+  padding: 0 8px;
+  color: var(--ink);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 10px;
+  text-transform: none;
+}
+
+/* The browser draws its own arrow inside the right edge, and a long option
+   label will otherwise run underneath it. */
+.compact-form select {
+  padding-right: 26px;
+}
+
+.hardware-status {
+  min-height: 15px;
+  margin: 9px 0 0 !important;
+  color: var(--faint) !important;
+  font-size: 9px !important;
+  text-align: center;
+}
+
+.hardware-status.ready {
+  color: var(--green) !important;
+}
+
+.learn-card {
+  display: grid;
+  grid-template-columns: 38px 1fr auto;
+  gap: 15px;
+  align-items: center;
+  margin-top: 20px;
+  padding: 17px 21px;
+  color: #c7d2cd;
+  background: var(--dark-2);
+  border-radius: 14px;
+}
+
+.learn-number {
+  display: grid;
+  place-items: center;
+  width: 35px;
+  height: 35px;
+  color: var(--lime);
+  border: 1px solid #40534b;
+  border-radius: 10px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.learn-card strong {
+  color: #f3f7f5;
+  font-size: 12px;
+}
+
+.learn-card p {
+  margin: 2px 0 0;
+  font-size: 11px;
+}
+
+.text-button {
+  padding: 0;
+  color: var(--green);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 680;
+  text-decoration: none;
+}
+
+.learn-card .text-button {
+  color: var(--lime);
+  white-space: nowrap;
+}
+
+/* Merged captures hang under the first one, indented so the relationship is
+   visible without a second heading: these are additions to that file, not
+   files of their own. */
+.extra-captures {
+  display: grid;
+  gap: 6px;
+  margin: -6px 0 18px 52px;
+}
+
+.extra-capture {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 13px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.extra-capture strong {
+  display: block;
+  font-size: 11px;
+}
+
+.extra-capture small {
+  display: block;
+  margin-top: 1px;
+  color: var(--faint);
+  font-size: 9px;
+}
+
+.extra-capture-add {
+  justify-self: start;
+  font-size: 11px;
+}
+
+.extra-capture-hint {
+  color: var(--faint);
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.file-summary {
+  display: grid;
+  grid-template-columns: 44px 1fr auto;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 18px;
+  padding: 14px 18px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 13px;
+}
+
+.file-glyph,
+.support-icon {
+  display: grid;
+  place-items: center;
+  width: 39px;
+  height: 39px;
+  color: var(--green);
+  background: var(--green-soft);
+  border-radius: 9px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.file-summary strong,
+.file-summary small {
+  display: block;
+}
+
+.file-summary strong {
+  font-size: 12px;
+}
+
+.file-summary small {
+  margin-top: 2px;
+  color: var(--faint);
+  font-size: 10px;
+}
+
+.details-layout,
+.results-layout,
+.port-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(260px, .72fr);
+  gap: 18px;
+}
+
+.form-card {
+  padding: 27px;
+}
+
+.section-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+}
+
+.section-label span {
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.section-label i {
+  padding: 3px 7px;
+  color: var(--red);
+  background: var(--red-soft);
+  border-radius: 99px;
+  font-size: 8px;
+  font-style: normal;
+  font-weight: 780;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  /* A two-word badge must break beside its label, never through itself. */
+  white-space: nowrap;
+}
+
+.section-label i.optional {
+  color: var(--green);
+  background: var(--green-soft);
+}
+
+.section-label.spaced {
+  margin-top: 29px;
+}
+
+/* Line up the controls, not the boxes.
+
+   Aligning boxes fails in two opposite ways. Stretched, a label that wraps to
+   two lines ("Mass with driver - kg" at a fifth of the width) pushes its input
+   a line below its neighbours' and a row of five inputs steps up and down.
+   Bottom-aligned, which fixed that, a field carrying a hint under its input
+   drags its *neighbour* down instead: the safety model's "Must exist in
+   opendbc/safety" line and its help link pushed "Safety param" to the bottom
+   of the row, well below the label it belongs to.
+
+   Subgrid settles it by putting every field's label, control and hint on
+   shared row tracks, so each lines up with its counterparts across the row
+   whatever the others carry. Top alignment is the fallback where subgrid is
+   missing: labels line up, and a hint then only lengthens its own field. */
+.field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: start;
+  gap: 17px;
+}
+
+@supports (grid-template-rows: subgrid) {
+  .field-grid {
+    align-items: stretch;
+  }
+
+  .field-grid > .field {
+    display: grid;
+    grid-row: span 3;
+    grid-template-rows: subgrid;
+  }
+}
+
+.field-wide {
+  grid-column: 1 / -1;
+}
+
+.field {
+  display: block;
+}
+
+.field > span {
+  display: block;
+  margin-bottom: 6px;
+  color: #46514d;
+  font-size: 11px;
+  font-weight: 680;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  height: 44px;
+  padding: 0 12px;
+  color: var(--ink);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  font-size: 12px;
+  transition: border-color .15s, box-shadow .15s;
+}
+
+.field select {
+  padding-right: 30px;  /* clear of the browser's own dropdown arrow */
+}
+
+.field textarea {
+  height: auto;
+  min-height: 92px;
+  padding: 10px 12px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgba(31, 118, 91, .09);
+  outline: none;
+}
+
+/* This block is also an `.advanced-block`, and the generic rules for those
+   assume the borderless variant: a top rule instead of a box, and a summary
+   whose padding is vertical only. Both of those land later in this file, so
+   equal specificity would lose on source order and leave the heading text
+   jammed against the card border. Naming both classes wins the cascade. */
+.advanced-block.manual-knowledge {
+  margin-top: 25px;
+  border: 1px solid #cbd9cf;
+  border-radius: 13px;
+}
+
+.advanced-block.manual-knowledge > summary {
+  padding: 16px 17px;
+  color: var(--green-2);
+  background: #f0f7f2;
+  border-radius: 12px;
+}
+
+.advanced-block.manual-knowledge[open] > summary {
+  border-bottom: 1px solid #d8e4db;
+  border-radius: 12px 12px 0 0;
+}
+
+.manual-knowledge > summary i {
+  margin-left: 8px;
+  padding: 3px 7px;
+  color: var(--green);
+  background: var(--green-soft);
+  border-radius: 99px;
+  font-size: 8px;
+  font-style: normal;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.manual-content {
+  padding: 20px 18px;
+}
+
+.manual-intro {
+  margin: 0 0 18px;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.field-grid.four-fields {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.field-grid.five-fields {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.manual-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 17px;
+  margin-top: 22px;
+}
+
+.notes-columns {
+  padding-top: 21px;
+  border-top: 1px solid var(--line);
+}
+
+.manual-signals {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 11px;
+}
+
+.manual-signal-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  /* The remove button is positioned into the right gutter, so the last
+     column's label needs somewhere to end before reaching it. */
+  padding: 14px 34px 14px 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 11px;
+}
+
+.manual-signal-row .field > span {
+  font-size: 9px;
+}
+
+.manual-signal-row .field input,
+.manual-signal-row .field select {
+  height: 35px;
+  padding: 0 8px;
+  font-size: 10px;
+}
+
+.manual-signal-row .signal-name,
+.manual-signal-row .signal-target {
+  grid-column: span 2;
+}
+
+.remove-signal {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  color: var(--red);
+  background: var(--red-soft);
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.field small {
+  display: block;
+  margin-top: 5px;
+  color: var(--faint);
+  font-size: 9px;
+}
+
+/* Its own column sizing, not the signal-override grid's. Inheriting that grid's
+   `span 2` rules filled all six columns with the first four fields, pushing
+   threshold onto a line of its own and leaving every row a different height.
+
+   Two per line. This editor sits in a ~615px column, and its selects carry the
+   longest option text in the app -- "ret.cruiseState.standstill" in one and
+   recovered signal names like "D_STEER_ANGLE_DEG_DT" in another. Three across
+   leaves about 127px each and clips both; five, as this once was, leaves 110px
+   and clips nearly everything. Two across is what actually fits, and it is
+   also what the narrow breakpoint already drops to, so the layout is the same
+   shape at every width. */
+.binding-row {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.binding-row .signal-name,
+.binding-row .signal-target {
+  grid-column: auto;
+}
+
+/* A gear map is a list of pairs, so it gets the full width underneath. */
+.binding-row .binding-gears-field {
+  grid-column: 1 / -1;
+}
+
+.binding-row .field select {
+  height: 35px;
+  padding: 0 8px;
+  font-size: 10px;
+}
+
+.command-block {
+  margin-bottom: 16px;
+  padding: 15px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 11px;
+}
+
+.command-heading {
+  margin-bottom: 12px;
+}
+
+.command-heading strong {
+  display: block;
+  font-size: 11px;
+}
+
+.command-heading small {
+  display: block;
+  margin-top: 2px;
+  color: var(--faint);
+  font-size: 9px;
+}
+
+.command-block .field-grid {
+  margin-bottom: 13px;
+}
+
+.command-block .manual-columns {
+  margin-top: 0;
+}
+
+.validation-card {
+  margin-bottom: 18px;
+  padding: 17px 20px;
+  background: var(--surface);
+  border: 1px solid var(--green);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-small);
+}
+
+.validation-card.failed {
+  border-color: var(--red);
+}
+
+.validation-head {
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  gap: 13px;
+  align-items: center;
+}
+
+.validation-mark {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  color: #fff;
+  background: var(--green);
+  border-radius: 50%;
+  font-weight: 800;
+}
+
+.validation-card.failed .validation-mark {
+  background: var(--red);
+}
+
+.validation-head strong {
+  display: block;
+  font-size: 13px;
+}
+
+.validation-head small {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.validation-list {
+  display: grid;
+  gap: 7px;
+  margin-top: 13px;
+}
+
+.validation-list:empty {
+  margin-top: 0;
+}
+
+.validation-row {
+  display: grid;
+  grid-template-columns: 168px 1fr;
+  gap: 11px;
+  align-items: baseline;
+  padding: 9px 11px;
+  background: var(--red-soft);
+  border-radius: 9px;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.validation-row.warning {
+  background: var(--amber-soft);
+}
+
+.validation-row code {
+  color: var(--ink);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.coverage-card {
+  margin-top: 18px;
+  padding: 20px 22px 18px;
+}
+
+.coverage-levels {
+  display: grid;
+  gap: 9px;
+  margin-bottom: 14px;
+}
+
+.coverage-level {
+  display: grid;
+  /* Wide enough for "Adds a steering controller - after Read the car" on one
+     line; the bar beside it is the part that can afford to give up room. */
+  grid-template-columns: minmax(0, 215px) 1fr auto;
+  gap: 14px;
+  align-items: center;
+}
+
+.coverage-level strong {
+  display: block;
+  font-size: 12px;
+}
+
+.coverage-level small {
+  display: block;
+  margin-top: 1px;
+  color: var(--faint);
+  font-size: 9px;
+}
+
+.coverage-bar {
+  height: 7px;
+  overflow: hidden;
+  background: #e8ece8;
+  border-radius: 99px;
+}
+
+.coverage-bar i {
+  display: block;
+  height: 100%;
+  background: var(--line-dark);
+  border-radius: 99px;
+  transition: width .3s ease;
+}
+
+.coverage-level.complete .coverage-bar i {
+  background: var(--green);
+}
+
+/* Striped, not dimmed: a level gated by an earlier one is unavailable rather
+   than unimportant, and lowering its opacity would take its text under the
+   contrast floor the rest of the palette holds to. */
+.coverage-level.locked .coverage-bar i {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(255, 255, 255, .6) 0 3px,
+    rgba(255, 255, 255, 0) 3px 6px
+  );
+}
+
+.coverage-count {
+  min-width: 62px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  text-align: right;
+}
+
+.coverage-level.complete .coverage-count {
+  color: var(--green);
+}
+
+.coverage-note {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  color: #765018;
+  background: var(--amber-soft);
+  border-radius: 9px;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.coverage-missing {
+  display: grid;
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* Sits between the warning about completeness and the gaps themselves: the
+   one piece of good news in the list, so it reads as guidance rather than
+   another caveat. */
+.coverage-hint {
+  margin: 0 0 12px;
+  padding: 10px 13px;
+  color: var(--green-2);
+  background: var(--green-soft);
+  border-radius: 10px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.coverage-row {
+  display: grid;
+  /* Both badge columns are fixed. Sized to content, the widest need badge
+     ("longitudinal") narrowed that row's middle column, and since the action
+     beside "How to find it" is right-aligned within it, one row's link sat
+     30px left of every other row's. */
+  grid-template-columns: 74px 1fr 84px;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 12px;
+  background: var(--surface);
+}
+
+.coverage-kind,
+.coverage-need {
+  padding: 3px 7px;
+  border-radius: 99px;
+  font-size: 8px;
+  font-weight: 780;
+  letter-spacing: .06em;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.coverage-kind {
+  color: var(--blue);
+  background: #e2eef2;
+}
+
+.coverage-need {
+  color: var(--muted);
+  background: #eef1ed;
+  /* Its column is fixed now, so keep the pill the width of its own text
+     rather than stretching it across the column. */
+  justify-self: end;
+}
+
+.coverage-row strong {
+  display: block;
+  font-size: 11px;
+}
+
+.coverage-row small {
+  display: block;
+  margin-top: 2px;
+  color: var(--faint);
+  font-size: 9px;
+}
+
+/* "How to find it" explains the measurement and this goes to the box it gets
+   typed into, so they belong on one line. A grid rather than two inline boxes:
+   the disclosure's own height changes when it opens, and anything sharing a
+   line with it by inline flow would be dragged down to the bottom of the
+   expanded text. Baseline alignment keeps the two labels level in both
+   states, and the explanation gets the full column under them. */
+.coverage-actions {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  column-gap: 14px;
+  margin-top: 6px;
+}
+
+.coverage-how {
+  min-width: 0;
+}
+
+.coverage-define {
+  font-size: 9px;
+}
+
+.coverage-how > summary {
+  display: inline-flex;
+  gap: 3px;
+  align-items: center;
+  color: var(--green);
+  cursor: pointer;
+  font-size: 9px;
+  font-weight: 700;
+  list-style: none;
+}
+
+.coverage-how .chevron {
+  width: 12px;
+  height: 12px;
+}
+
+.coverage-how .chevron::before {
+  width: 4px;
+  height: 4px;
+  border-width: 1.5px;
+}
+
+.coverage-how p {
+  margin: 5px 0 2px;
+  padding: 8px 10px;
+  color: var(--muted);
+  background: var(--surface-2);
+  border-left: 2px solid var(--green);
+  border-radius: 0 7px 7px 0;
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.coverage-done {
+  margin: 0;
+  padding: 12px;
+  color: var(--green);
+  background: var(--surface);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.support-upload {
+  display: grid;
+  grid-template-columns: 42px 1fr auto;
+  gap: 14px;
+  align-items: center;
+  padding: 17px;
+  background: var(--surface-2);
+  border: 1px dashed var(--line-dark);
+  border-radius: 12px;
+}
+
+.support-upload strong {
+  display: block;
+  font-size: 12px;
+}
+
+.support-upload p {
+  margin: 3px 0 5px;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.vehicle-info-upload {
+  margin: 18px 0 4px;
+}
+
+.attached-file {
+  display: block;
+  color: var(--faint);
+  font-size: 9px;
+}
+
+.attached-file.ready {
+  color: var(--green);
+  font-weight: 650;
+}
+
+.advanced-block {
+  margin-top: 20px;
+  border-top: 1px solid var(--line);
+}
+
+#port-facts {
+  margin-top: 18px;
+  border-top: 0;
+}
+
+/* It is a card here, so it must stop looking like a highlighted block nested
+   inside one. The mint header band, its own border and its 12px corners were
+   drawn to sit inside step 2's white card; against this card's 18px radius
+   they left a tinted seam across the top edge. */
+#port-facts > summary {
+  padding: 18px 22px;
+  color: var(--ink);
+  background: none;
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+
+#port-facts[open] > summary {
+  border-bottom: 1px solid var(--line);
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+
+#port-facts .manual-content {
+  padding: 20px 22px 22px;
+}
+
+.advanced-block summary,
+.probe-card summary,
+.install-card summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 0 0;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 680;
+  list-style: none;
+}
+
+summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Drawn rather than typed. A "⌄" glyph sits at whatever height the fallback
+   font decides, which is what made these markers look one or two pixels off
+   from the label beside them. Two borders on a rotated box are centred by
+   construction, in any font, at any size. */
+.chevron {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+  transition: transform .18s ease;
+}
+
+.chevron::before {
+  width: 6px;
+  height: 6px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  content: "";
+  transform: translateY(-1px) rotate(45deg);
+}
+
+details[open] > summary .chevron {
+  transform: rotate(180deg);
+}
+
+.advanced-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 18px;
+  padding: 18px;
+  background: var(--surface-2);
+  border-radius: 11px;
+}
+
+.check-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  color: var(--muted);
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.check-row input {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  margin: 2px 0 0;
+  accent-color: var(--green);
+}
+
+.check-row strong,
+.check-row small {
+  display: block;
+}
+
+.check-row strong {
+  color: var(--ink);
+  font-size: 11px;
+}
+
+.check-row small {
+  margin-top: 2px;
+}
+
+.guidance-column {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+}
+
+.guidance-card {
+  padding: 23px;
+}
+
+.guidance-card.subdued {
+  background: #edf1ec;
+  box-shadow: none;
+}
+
+.guidance-icon {
+  display: grid;
+  place-items: center;
+  width: 35px;
+  height: 35px;
+  margin-bottom: 16px;
+  color: var(--green);
+  background: var(--green-soft);
+  border-radius: 10px;
+  font-size: 18px;
+}
+
+.guidance-card h3 {
+  margin: 0;
+  font-size: 14px;
+}
+
+.guidance-card p {
+  margin: 7px 0 12px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.file-link {
+  display: inline-block;
+  cursor: pointer;
+}
+
+.guidance-card .attached-file {
+  margin-top: 7px;
+}
+
+.panel-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 23px;
+  padding-top: 19px;
+  border-top: 1px solid var(--line);
+}
+
+.status-banner {
+  position: sticky;
+  top: 14px;
+  z-index: 12;
+  display: grid;
+  grid-template-columns: 30px 1fr auto;
+  gap: 13px;
+  align-items: center;
+  width: min(700px, calc(100% - 40px));
+  margin: 14px auto -75px;
+  padding: 12px 15px;
+  color: #e7eee9;
+  background: rgba(16, 26, 24, .96);
+  border: 1px solid #35463f;
+  border-radius: 13px;
+  box-shadow: 0 16px 40px rgba(9, 16, 14, .24);
+  backdrop-filter: blur(12px);
+}
+
+.status-banner strong {
+  font-size: 11px;
+}
+
+.status-banner p {
+  margin: 1px 0 0;
+  color: #9aaba4;
+  font-size: 10px;
+}
+
+.status-banner .button {
+  min-height: 32px;
+  padding: 5px 10px;
+  color: #c8d3ce;
+}
+
+.spinner {
+  width: 23px;
+  height: 23px;
+  border: 2px solid #40534b;
+  border-top-color: var(--lime);
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.readiness-dial {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 9px;
+  align-items: center;
+  min-width: 148px;
+  padding: 14px 18px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 15px;
+}
+
+.readiness-dial > span {
+  color: var(--green);
+  font-size: 27px;
+  font-weight: 730;
+  letter-spacing: -.05em;
+}
+
+.readiness-dial small {
+  color: var(--faint);
+  font-size: 8px;
+  font-weight: 720;
+  letter-spacing: .06em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+.empty-result {
+  display: grid;
+  justify-items: center;
+  min-height: 380px;
+  padding: 60px 20px;
+  text-align: center;
+  background: rgba(255, 255, 255, .52);
+  border: 1px dashed var(--line-dark);
+  border-radius: var(--radius);
+}
+
+.empty-result p {
+  max-width: 460px;
+  margin: 8px 0 20px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.scan-visual {
+  position: relative;
+  width: 120px;
+  height: 90px;
+  margin-bottom: 19px;
+}
+
+.scan-visual::before,
+.scan-visual::after,
+.scan-visual span {
+  position: absolute;
+  border: 1px solid #c4d1c9;
+  border-radius: 50%;
+  content: "";
+}
+
+.scan-visual::before { inset: 4px 19px; }
+.scan-visual::after { inset: 18px 33px; }
+.scan-visual span { inset: 32px 47px; background: var(--green-soft); }
+.scan-visual i {
+  position: absolute;
+  top: 43px;
+  left: 60px;
+  width: 55px;
+  height: 2px;
+  background: var(--green);
+  transform-origin: left;
+  animation: radar 3s ease-in-out infinite;
+}
+
+@keyframes radar {
+  0%, 100% { transform: rotate(-50deg); }
+  50% { transform: rotate(50deg); }
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  margin-bottom: 18px;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+
+.metric {
+  min-width: 0;
+  padding: 18px 16px;
+  border-right: 1px solid var(--line);
+}
+
+.metric:last-child {
+  border-right: 0;
+}
+
+.metric span,
+.metric strong,
+.metric small {
+  display: block;
+}
+
+.metric span {
+  color: var(--faint);
+  font-size: 8px;
+  font-weight: 780;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.metric strong {
+  margin: 5px 0 1px;
+  font-size: 25px;
+  line-height: 1;
+}
+
+.metric small {
+  overflow: hidden;
+  color: var(--faint);
+  font-size: 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.metric.accent {
+  background: var(--green-soft);
+}
+
+.metric.accent strong {
+  color: var(--green);
+}
+
+.result-card {
+  overflow: hidden;
+}
+
+.result-card-heading {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 22px 17px;
+  border-bottom: 1px solid var(--line);
+}
+
+.result-card-heading .eyebrow {
+  margin-bottom: 4px;
+  font-size: 8px;
+}
+
+.result-card-heading h2 {
+  font-size: 15px;
+}
+
+.artifact-links {
+  display: flex;
+  gap: 12px;
+}
+
+.artifact-links a {
+  color: var(--green);
+  font-size: 9px;
+  font-weight: 680;
+  text-decoration: none;
+}
+
+.artifact-links a::after {
+  content: " ↓";
+}
+
+.evidence-list,
+.review-list,
+.package-list {
+  display: grid;
+}
+
+.evidence-row,
+.review-row,
+.package-row {
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  gap: 11px;
+  align-items: center;
+  padding: 14px 22px;
+  border-bottom: 1px solid #edf0ec;
+}
+
+.evidence-row:last-child,
+.review-row:last-child,
+.package-row:last-child {
+  border-bottom: 0;
+}
+
+.evidence-row .row-icon,
+.package-row .row-icon {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  color: var(--green);
+  background: var(--green-soft);
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.evidence-row strong,
+.evidence-row small,
+.package-row strong,
+.package-row small,
+.review-row strong,
+.review-row small {
+  display: block;
+}
+
+.evidence-row strong,
+.package-row strong,
+.review-row strong {
+  font-size: 10px;
+}
+
+.evidence-row small,
+.package-row small,
+.review-row small {
+  margin-top: 2px;
+  color: var(--faint);
+  font-size: 8px;
+  line-height: 1.4;
+}
+
+.row-value {
+  color: var(--green);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.review-card {
+  background: #fffdf8;
+  border-color: #e6ddca;
+}
+
+.human-badge,
+.read-only-badge {
+  padding: 4px 7px;
+  color: var(--amber);
+  background: var(--amber-soft);
+  border-radius: 99px;
+  font-size: 8px;
+  font-weight: 780;
+  white-space: nowrap;
+}
+
+.read-only-badge {
+  color: var(--green);
+  background: var(--green-soft);
+}
+
+.review-row {
+  grid-template-columns: 20px 1fr;
+  align-items: start;
+}
+
+.review-dot {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  color: var(--amber);
+  background: var(--amber-soft);
+  border-radius: 50%;
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.review-row[data-level="required"] .review-dot {
+  color: var(--red);
+  background: var(--red-soft);
+}
+
+.probe-card,
+.install-card {
+  margin-top: 18px;
+  overflow: hidden;
+}
+
+.probe-card summary,
+.install-card summary {
+  display: grid;
+  gap: 12px;
+  padding: 17px 20px;
+}
+
+/* The probe card leads with a warning glyph; the install card does not. They
+   shared one template, so the install card's heading was being squeezed into
+   the 36px glyph column and wrapping one word per line. */
+.probe-card summary {
+  grid-template-columns: 36px 1fr auto;
+}
+
+.install-card summary {
+  grid-template-columns: 1fr auto;
+}
+
+.probe-card summary > span:nth-child(2) strong,
+.probe-card summary > span:nth-child(2) small,
+.install-card summary strong,
+.install-card summary small {
+  display: block;
+}
+
+.probe-card summary small,
+.install-card summary small {
+  margin-top: 2px;
+  color: var(--faint);
+  font-size: 9px;
+  font-weight: 450;
+}
+
+.probe-card summary > span:last-child,
+.install-card summary > span:last-child {
+  color: var(--green);
+  font-size: 9px;
+}
+
+.warning-glyph {
+  display: grid;
+  place-items: center;
+  width: 31px;
+  height: 31px;
+  color: var(--amber);
+  background: var(--amber-soft);
+  border-radius: 9px;
+}
+
+.probe-content,
+.install-content {
+  display: grid;
+  gap: 14px;
+  padding: 20px;
+  background: var(--surface-2);
+  border-top: 1px solid var(--line);
+}
+
+.safety-note {
+  padding: 13px;
+  color: #765018;
+  background: var(--amber-soft);
+  border-radius: 9px;
+  font-size: 10px;
+}
+
+.safety-note p {
+  margin: 3px 0 0;
+}
+
+.probe-content .field {
+  max-width: 300px;
+}
+
+.success-card {
+  display: grid;
+  grid-template-columns: 52px 1fr auto;
+  gap: 17px;
+  align-items: center;
+  margin-bottom: 18px;
+  padding: 24px;
+  color: #eff7f2;
+  background:
+    linear-gradient(115deg, rgba(201, 243, 107, .08), transparent 60%),
+    var(--dark-2);
+  border-radius: var(--radius);
+}
+
+.success-mark {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  color: var(--dark);
+  background: var(--lime);
+  border-radius: 14px;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.success-card .eyebrow {
+  color: var(--lime);
+}
+
+.success-card p:last-child {
+  margin: 5px 0 0;
+  color: #a9b8b1;
+  font-size: 10px;
+}
+
+.success-card p:last-child strong {
+  color: #dbe5e0;
+}
+
+.success-card .button {
+  color: var(--dark);
+  background: var(--lime);
+  border-color: var(--lime);
+}
+
+.package-visual {
+  display: grid;
+  place-items: center;
+  width: 85px;
+  height: 85px;
+  margin-bottom: 18px;
+  color: var(--lime);
+  background: var(--dark);
+  border-radius: 21px;
+  box-shadow: 12px 12px 0 #dce4db;
+  font-size: 24px;
+  font-weight: 780;
+  letter-spacing: -.07em;
+}
+
+.field-row {
+  display: flex;
+  gap: 12px;
+  align-items: end;
+}
+
+.field-row .grow {
+  flex: 1;
+}
+
+.danger-check {
+  color: var(--red);
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(11, 19, 17, .62);
+  backdrop-filter: blur(5px);
+}
+
+.modal {
+  position: relative;
+  width: min(610px, 100%);
+  max-height: min(720px, calc(100vh - 40px));
+  overflow-y: auto;
+  padding: 32px;
+  background: var(--surface);
+  border-radius: 19px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, .22);
+  animation: modal-in .18s ease both;
+}
+
+@keyframes modal-in {
+  from { opacity: 0; transform: scale(.98) translateY(5px); }
+}
+
+.modal h2 {
+  margin: 0 0 18px;
+  font-size: 25px;
+  letter-spacing: -.04em;
+}
+
+/* Sticky, because .modal is itself the scroll container: absolutely positioned,
+   the close button scrolled out of sight partway down the longer help topics.
+   Floated so it reserves its corner instead of overlapping the heading, and
+   pulled into the modal's padding so it sits where it always did. */
+.modal-close {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  float: right;
+  margin: -17px -17px 0 12px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  color: var(--muted);
+  background: #eef1ed;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 19px;
+}
+
+#help-content {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+#help-content h3 {
+  margin: 22px 0 7px;
+  color: var(--ink);
+  font-size: 14px;
+}
+
+#help-content ul,
+#help-content ol {
+  padding-left: 19px;
+}
+
+#help-content li {
+  margin: 7px 0;
+}
+
+.project-list {
+  display: grid;
+  gap: 9px;
+  max-height: 380px;
+  margin-bottom: 16px;
+  overflow-y: auto;
+}
+
+.empty-note {
+  margin: 0;
+  padding: 20px 16px;
+  color: var(--faint);
+  background: var(--surface-2);
+  border: 1px dashed var(--line);
+  border-radius: 11px;
+  font-size: 12px;
+  text-align: center;
+}
+
+.project-item {
+  padding: 14px;
+  color: var(--ink);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  text-align: left;
+}
+
+.project-item:hover,
+.project-item.active {
+  border-color: var(--green);
+}
+
+.project-main {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.project-open {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 14px;
+  align-items: center;
+  min-width: 0;
+  padding: 0;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.project-item strong,
+.project-item small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.project-item small {
+  margin-top: 2px;
+  color: var(--faint);
+  font-size: 9px;
+}
+
+.project-open > span {
+  color: var(--green);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* Quiet until pointed at. Outlined, the destructive action was the only thing
+   on the row drawn like a button, so it outranked "Open" -- which is plain
+   green text -- in a list whose whole purpose is opening a project. The
+   transparent border keeps the hover state from shifting the row. */
+.project-delete {
+  padding: 6px 10px;
+  color: var(--muted);
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.project-delete:hover {
+  color: var(--red);
+  background: var(--red-soft);
+  border-color: var(--red);
+}
+
+.project-confirm {
+  display: none;
+  grid-template-columns: 1fr auto auto;
+  gap: 9px;
+  align-items: center;
+}
+
+.project-item.confirming {
+  background: var(--red-soft);
+  border-color: var(--red);
+}
+
+.project-item.confirming .project-main {
+  display: none;
+}
+
+.project-item.confirming .project-confirm {
+  display: grid;
+}
+
+.project-confirm p {
+  margin: 0;
+  color: var(--red);
+  font-size: 10px;
+  font-weight: 620;
+  line-height: 1.4;
+}
+
+.project-confirm button {
+  padding: 7px 11px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.confirm-keep {
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line-dark);
+}
+
+.confirm-delete {
+  color: #fff;
+  background: var(--red);
+  border: 1px solid var(--red);
+}
+
+.confirm-delete:disabled {
+  opacity: .6;
+  cursor: default;
+}
+
+.toast-stack {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 200;
+  display: grid;
+  gap: 9px;
+  width: min(360px, calc(100vw - 44px));
+}
+
+.toast {
+  padding: 13px 16px;
+  color: #e8f0ec;
+  background: var(--dark);
+  border-left: 3px solid var(--lime);
+  border-radius: 10px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, .2);
+  font-size: 11px;
+  animation: toast-in .18s ease both;
+}
+
+.toast.error {
+  border-left-color: #f0927e;
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(8px); }
+}
+
+@media (max-width: 1100px) {
+  .choice-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .choice-card:first-child {
+    grid-column: 1 / -1;
+    min-height: 300px;
+  }
+
+  .metric-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .metric:nth-child(3) {
+    border-right: 0;
+  }
+
+  .metric:nth-child(-n + 3) {
+    border-bottom: 1px solid var(--line);
+  }
+}
+
+@media (max-width: 840px) {
+  .app-shell {
+    display: block;
+  }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    grid-template-columns: 1fr auto;
+    height: 62px;
+    min-height: 62px;
+    padding: 0 16px;
+  }
+
+  .topbar-center {
+    display: none;
+  }
+
+  .sidebar {
+    position: sticky;
+    top: 62px;
+    z-index: 15;
+    display: block;
+    padding: 7px 10px;
+    overflow-x: auto;
+    background: var(--dark-2);
+  }
+
+  .project-heading,
+  .privacy-card {
+    display: none;
+  }
+
+  /* The sidebar becomes a horizontal strip here, so the guide keeps only the
+     part that does the work: what to do next, and the button that goes there.
+     The progress bar and full checklist would not fit and are not the point. */
+  .guide {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin: 8px 0 4px;
+    padding: 10px 12px;
+  }
+
+  .guide-head,
+  .guide-progress,
+  .guide-count,
+  .guide-list,
+  #guide-detail,
+  .guide-why,
+  .guide-skip {
+    display: none;
+  }
+
+  .guide h3 {
+    margin: 0;
+    font-size: 12px;
+  }
+
+  .guide .button-primary {
+    width: auto;
+    margin-left: auto;
+    white-space: nowrap;
+  }
+
+  #guide-body {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    width: 100%;
+  }
+
+  .steps {
+    display: flex;
+    min-width: 560px;
+  }
+
+  .step {
+    grid-template-columns: 25px 1fr;
+    min-height: 49px;
+    padding: 6px 10px;
+  }
+
+  .step > i,
+  .step small {
+    display: none;
+  }
+
+  .step.active::before {
+    top: auto;
+    right: 12px;
+    bottom: 0;
+    left: 12px;
+    width: auto;
+    height: 2px;
+  }
+
+  .step-number {
+    width: 23px;
+    height: 23px;
+  }
+
+  .main {
+    overflow: visible;
+  }
+
+  .panel {
+    width: min(100% - 30px, 740px);
+    padding: 39px 0;
+  }
+
+  .panel-heading h1 {
+    font-size: 37px;
+  }
+
+  .details-layout,
+  .results-layout,
+  .port-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .guidance-column {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .status-banner {
+    top: 120px;
+  }
+}
+
+@media (max-width: 620px) {
+  .choice-grid,
+  .guidance-column {
+    grid-template-columns: 1fr;
+  }
+
+  .choice-card:first-child {
+    grid-column: auto;
+  }
+
+  /* The height floors exist to keep the cards level side by side. Stacked,
+     there is nothing to level against, and `margin-top: auto` on the drop zone
+     turned the slack into a gap in the middle of the upload card. */
+  .choice-card,
+  .choice-card:first-child {
+    min-height: 0;
+  }
+
+  .split-heading,
+  .result-heading {
+    align-items: flex-start;
+  }
+
+  .stage-glyph {
+    display: none;
+  }
+
+  .readiness-dial {
+    min-width: 105px;
+    padding: 10px;
+  }
+
+  .readiness-dial > span {
+    font-size: 21px;
+  }
+
+  .field-grid,
+  .advanced-content,
+  .field-grid.four-fields,
+  .manual-columns {
+    grid-template-columns: 1fr;
+  }
+
+  /* Two, not one: these are five short numbers, and a five-row stack is a lot
+     of scrolling for "1845". Needs its own rule because `.field-grid` alone
+     cannot override the `.field-grid.five-fields` above it. */
+  .field-grid.five-fields {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .manual-signal-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .field-wide {
+    grid-column: auto;
+  }
+
+  .support-upload {
+    grid-template-columns: 38px 1fr;
+  }
+
+  .support-upload .button {
+    grid-column: 1 / -1;
+  }
+
+  .metric-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .metric:nth-child(2n) {
+    border-right: 0;
+  }
+
+  .metric:nth-child(3) {
+    border-right: 1px solid var(--line);
+  }
+
+  .metric:nth-child(-n + 4) {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .success-card {
+    grid-template-columns: 45px 1fr;
+  }
+
+  .success-card .button {
+    grid-column: 1 / -1;
+  }
+
+  .learn-card {
+    grid-template-columns: 32px 1fr;
+  }
+
+  .learn-card .text-button {
+    grid-column: 1 / -1;
+  }
+
+  .field-row {
+    display: grid;
+  }
+
+  .artifact-links {
+    display: grid;
+    gap: 3px;
+    text-align: right;
+  }
+
+  .project-confirm {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .project-confirm p {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}

@@ -1,0 +1,31 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.coverage
+htmlcov/
+tmp/
+
+# Captures and generated artifacts are usually large and vehicle-specific.
+*.log
+*.dbc
+!tests/**/*.log
+
+# Downloaded example data and generated artifacts (see examples/run_kia_soul_ev.sh).
+examples/*.txt
+examples/*.csv
+examples/*.log
+examples/*.json
+examples/kia_recovered.dbc
+examples/kia_chassis.dbc
+examples/kia_soul_ev.dbc
+examples/kia_port.py
+examples/recan/
+examples/opendbc/
+examples/openpilot/
+examples/kia_port/
+examples/*_port/

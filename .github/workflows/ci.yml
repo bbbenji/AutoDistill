@@ -1,0 +1,178 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install
+        run: pip install -e '.[dev]'
+
+      - name: Lint
+        run: ruff check autodistill_can tests tools
+
+      # The render checks need a browser and are owned by the `web-render` job
+      # below, which fails rather than skips when one is missing.
+      - name: Test
+        run: pytest -q --ignore=tests/test_web_render.py
+
+  # The UI's other tests never lay the page out: the server is exercised over
+  # HTTP, and test_web_assets pins the ids, hooks and palette the three static
+  # files agree on. A select too narrow for the option that identifies it, a
+  # page that scrolls sideways on a phone, and a stylesheet rule that never
+  # matches are all invisible until a browser has rendered the thing -- and all
+  # three have shipped here.
+  web-render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: pip install -e '.[dev]'
+
+      # Named explicitly so this fails loudly if the runner image ever stops
+      # shipping Chrome, instead of the render checks silently skipping.
+      - name: Show the browser being used
+        run: google-chrome --version
+
+      - name: Render every panel at desktop and phone widths
+        env:
+          AUTODISTILL_REQUIRE_BROWSER: "1"
+        run: pytest tests/test_web_render.py -q
+
+  # The analysis core claims to need nothing but the standard library. That is
+  # a promise about running on a comma device, so it is worth actually checking
+  # rather than assuming, in an environment where nothing else is installed.
+  stdlib-only:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install with no optional dependencies
+        run: pip install -e .
+
+      - name: Analyse a synthetic capture end to end
+        run: |
+          autodistill-can synth -d 30 -o drive.log --reference ref.csv -q
+          autodistill-can analyse drive.log --reference ref.csv \
+            --dbc car.dbc -o report.txt -q
+          autodistill-can port drive.log --reference ref.csv \
+            --brand testcar --name "TEST CAR" -o generated_port -q
+          test -s car.dbc && test -s report.txt
+          python -c "import pathlib; [compile(p.read_text(), p.name, 'exec') for p in pathlib.Path('generated_port').glob('*.py')]"
+
+  # A generated package can be syntactically valid while missing one of
+  # opendbc's central registries. Exercise the real current API so upstream
+  # layout changes fail here instead of on a comma device.
+  opendbc-current:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install AutoDistill CAN
+        run: pip install -e '.[dev]'
+
+      - name: Generate and install a read-only port
+        run: |
+          autodistill-can synth -d 12 -o drive.log --reference ref.csv -q
+          autodistill-can port drive.log --reference ref.csv \
+            --brand testcar --name "TEST CAR 2021" -o generated_port -q
+          git clone --depth 1 https://github.com/commaai/opendbc.git /tmp/opendbc
+          autodistill-can install generated_port /tmp/opendbc -q
+
+      - name: Construct against current opendbc and prove output is inert
+        working-directory: /tmp/opendbc
+        run: |
+          pip install -e . zstandard pytest-subtests
+          python -c "from opendbc.car import structs; from opendbc.car.testcar.values import CAR; from opendbc.car.testcar.interface import CarInterface; c=next(iter(CAR)); p=CarInterface.get_non_essential_params(c); i=CarInterface(p); i.update([]); assert p.dashcamOnly and not i.apply(structs.CarControl().as_reader())[1]"
+
+      # The read-only port above exercises none of the control path, which is
+      # the code that would transmit. Build a second port from a facts file and
+      # construct that too: it is the only way the generated CANPacker call,
+      # torque tuning, gear map and safety model are checked against the real
+      # API rather than against our idea of it.
+      - name: Generate and install a control port
+        run: |
+          python tools/control_facts.py drive.log ref.csv /tmp/facts.json
+          autodistill-can validate drive.log --reference ref.csv \
+            --vehicle-info /tmp/facts.json
+          autodistill-can port drive.log --reference ref.csv \
+            --vehicle-info /tmp/facts.json \
+            --brand ctlcar --name "CTL CAR 2021" -o control_port -q
+          autodistill-can install control_port /tmp/opendbc -q
+
+      - name: Construct the control port and prove it sends the declared message
+        working-directory: /tmp/opendbc
+        run: |
+          python - <<'PY'
+          import json
+          from opendbc.car import structs
+          from opendbc.car.ctlcar.values import CAR, CarControllerParams
+          from opendbc.car.ctlcar.interface import CarInterface
+
+          facts = json.load(open("/tmp/facts.json"))
+          declared = facts["actuation"]["lateral"]
+
+          platform = next(iter(CAR))
+          params = CarInterface.get_non_essential_params(platform)
+          assert not params.dashcamOnly, "a declared safety model must leave dashcam mode"
+          assert params.safetyConfigs[0].safetyModel == structs.CarParams.SafetyModel.hyundai
+          assert CarControllerParams.STEER_MAX == facts["limits"]["steer_max"]
+
+          interface = CarInterface(params)
+          interface.update([])
+
+          control = structs.CarControl()
+          control.enabled = True
+          control.latActive = True
+          control.actuators.torque = 1.0
+          _, sends = interface.apply(control.as_reader())
+          assert sends, "a declared lateral command must produce a message"
+          addresses = {message[0] for message in sends}
+          assert int(declared["address"], 16) in addresses, addresses
+          print(f"control port sent {len(sends)} message(s): {sorted(addresses)}")
+          PY
+
+      # A generated port has to be a good citizen, not merely a valid one.
+      # `test_car_interfaces` and `test_docs` both passed while our FW_VERSIONS
+      # table was silently matching every car in opendbc and breaking
+      # fingerprinting for 460 unrelated vehicles -- only the fingerprint tests
+      # caught it. They are the ones worth running here.
+      #
+      # `test_fw_query_timing` is deselected: it looks each brand up in a
+      # hardcoded reference-time table upstream, so it raises KeyError for any
+      # new brand, generated or hand-written, until opendbc adds an entry.
+      - name: Run opendbc's own test suite against the installed ports
+        working-directory: /tmp/opendbc
+        run: |
+          pytest -q \
+            opendbc/car/tests/test_car_interfaces.py \
+            opendbc/car/tests/test_docs.py \
+            opendbc/car/tests/test_platform_configs.py \
+            opendbc/car/tests/test_fw_fingerprint.py \
+            --deselect opendbc/car/tests/test_fw_fingerprint.py::TestFwFingerprintTiming::test_fw_query_timing
